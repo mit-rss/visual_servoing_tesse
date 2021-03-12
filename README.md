@@ -1,7 +1,6 @@
 | Deliverable | Due Date              |
 |---------------|----------------------------------------------------------------------------|
 | Briefing   | Wednesday, March 24th at 1:00PM EST     |
-| Lab Report   | Friday, March 26th at 11:59PM EST      |
 | [Team Member Assessment](todo link here)  | Friday, March 26th at 11:59PM EST |
 
 # Lab 4: Vision In Tesse
