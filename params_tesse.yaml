@@ -5,4 +5,5 @@ seg_cam_topic: "/tesse/seg_cam/rgb/image_raw"
 seg_cam_info_topic: "/tesse/seg_cam/camera_info"
 depth_cam_topic: "/tesse/depth_cam/mono/image_raw"
 depth_cam_info_topic: "/tesse/depth_cam/camera_info"
-lane_color_rgb: [_,_,_]
+lane_line_topic: "/lane_line"
+lane_semantic_label: "Decal_Road_Border_left(Clone)"
