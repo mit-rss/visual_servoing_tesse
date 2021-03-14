@@ -69,13 +69,18 @@ Evaluation (include in presentation): (TODO MODIFY)
 
 # Nodes
 
-Vision Node:
-- Subscribes: /tesse/segmentation: image message
-- Publishes: /image_lane_line: line message
+Lane Following Vision Node:
+ - Subscribes: /tesse/segmentation: image message
+ - Publishes: /tesse/lane_line: line message
+
+Cone Parking Vision Node:
+ - Subscribes: /tesse/segmentation: image message
+ - Publishes: /relative_cone_px: pose message (pixel coordinates)
 
 Homography Node:
-- Subscribes: /image_lane_line: line message
-- Publishes: /relative_cone: pose message
+ - Subscribes: /relative_cone_px: pose message
+ - Subscribes: /image_lane_line: line message
+ - Publishes: /relative_cone: pose message
 
 Control Node:
 - Subscribes: /relative_cone: pose message
