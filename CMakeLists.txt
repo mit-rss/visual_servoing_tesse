@@ -53,8 +53,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
  add_message_files(
    FILES
-   #cone_location.msg
-   #parking_error.msg
+   cone_location.msg
+   parking_error.msg
+   LaneLine.msg
 )
 
 ## Generate services in the 'srv' folder

@@ -4,7 +4,7 @@ from geometry_msgs.msg import PointStamped
 import tf
 from tf.transformations import euler_from_quaternion
 import numpy as np
-from lab4.msg import cone_location
+from visual_servoing_tesse.msg import cone_location, LaneLine
 from visualization_msgs.msg import Marker
 
 class HomographyConverter():
@@ -14,11 +14,14 @@ class HomographyConverter():
     relative to robot for Parking Controller to park in front of.
     """
     def __init__(self):
-        # Subscribe to clicked point messages from rviz    
+        # Subscribe to clicked point messages from rviz  
+        #RELATIVE_CONE_PX_TOPIC = rospy.get_param("relative_cone_px_topic")
+        LANE_LINE_TOPIC = rospy.get_param("lane_line_topic")
+
         rospy.Subscriber("/relative_cone_px", 
             PointStamped, self.point_callback)
-        rospy.Subscriber("/lane_line_px", 
-            LinePlaceholder, self.line_callback)
+        rospy.Subscriber(LANE_LINE_TOPIC, 
+            LineLine, self.line_callback)
         self.message_x = None
         self.message_y = None
         self.message_frame = "map"
