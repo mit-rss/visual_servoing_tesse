@@ -67,6 +67,19 @@ Evaluation (include in presentation): (TODO MODIFY)
 - 1 point for demonstrating and explaining performance of the parking controller. Make sure you mention your method for tuning the controller gains. Hint: include error plots from **rqt_plot**
 - 1 point for demonstrating and explaining performance of the line-follower. Make sure you mention your method for tuning the controller gains. Hint: include error plots from **rqt_plot**
 
+# Nodes
+
+Vision Node:
+- Subscribes: /tesse/segmentation: image message
+- Publishes: /image_lane_line: line message
+
+Homography Node:
+- Subscribes: /image_lane_line: line message
+- Publishes: /relative_cone: pose message
+
+Control Node:
+- Subscribes: /relative_cone: pose message
+
 # Module 1: Cone Detection Via Color Segmentation (TODO MODIFY)
 In lecture we learned lots of different ways to detect objects. Sometimes it pays to train a fancy neural net to do the job. Sometimes we are willing to wait and let SIFT find it. Template matching is cool too.
 
