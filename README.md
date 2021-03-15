@@ -5,16 +5,29 @@
 
 # Lab 4: Vision In Tesse
 
-Welcome to Lab 4, where you will learn how to use the camera to allow the racecar in tesse to park using a colored cone and follow lanes!
+Welcome to Lab 4, where you will learn how to use the semantic segmentation camera in tesse to allow the racecar to park using a colored cone and follow lines!
+
+The semantic segmentation camera provides images that classify every object in the image by displaying them with a different color according to the object label. (You can see the camera images when you run `rqt_image_view` after your tesse-ros-bridge node and executable are up and running.) 
+
+The images from the semantic segmentation camera look something like this:
+
+![](media/tesse-road-seg-cam.png)
+
+We provide you with a csv file that maps these semantic class labels to the rgba colors in the image, and you will do a combination of image processing and control to complete the tasks in this lab. 
 
 In this lab, your team will do the following:
-TODO
+* Experiment with object detection algorithms
+* Learn how to detect a road lane line in images
+* Learn how to transform a pixel from an image to a real world plane (given node to do this step)
+* Develop a parking controller to park your robot in front of an orange cone
+* Extend your parking controller into a line following controller
 
 ### Lab Modules
 This lab has a lot in it, so we are encouraging parallelization by breaking up the components of the lab into <TODO> distinct modules, which you will combine together. Each module tackles an interesting problem in computer vision/controls.  
 - Module 1: Cone Detection via Color Segmentation
 - Module 2: 
-- Module 3: 
+- Module 3: Line Detection via Hough Transforms
+- Module ?: 
 
 Here’s how they fit together. TODO
 
@@ -50,7 +63,7 @@ We wrote some code to test the Intersection over Union (IOU) scores of your visi
 To test your algorithm against the cone dataset. Results will be outputted to a .csv file in **scores/**. Some images will not yield good results. This is expected, and we would like to know why the algorithm works/doesn't work for certain images in your writeup.
 
 Controller analysis: (TODO MODIFY)
-When you wrote the parking controller (module 4), you published error messages. Now it’s time to use **rqt_plot** to generate some plots. Try running the following experiments:
+When you wrote the parking controller (module <INSERT HERE>), you published error messages. Now it’s time to use **rqt_plot** to generate some plots. Try running the following experiments:
 - Put a cone directly in front of the car, ~3-5 meters away. Your car should drive straight forward and stop in front of the cone. Show us plots of x-error and total-error over time, and be prepared to discuss.
 - Run the car on one of our tracks, and check out the plots for any interesting error signals. Compare plots at different speeds, and see how error signals change with speed.
 ### Grading: /10 (TODO MODIFY)
@@ -85,7 +98,7 @@ Homography Node:
 Control Node:
 - Subscribes: /relative_cone: pose message
 
-# Module 1: Cone Detection Via Color Segmentation (TO MODIFY -- SEEMS GOOD??)
+# Module 1: Cone Detection Via Color Segmentation
 In lecture we learned lots of different ways to detect objects. Sometimes it pays to train a fancy neural net to do the job. Sometimes we are willing to wait and let SIFT find it. Template matching is cool too.
 
 But sometimes simple algorithms are the correct choice, and for our purposes, identifying the cone by its distinctive color will prove most effective. Your job in this module will be identify cones (and other orange objects) and output bounding boxes containing them.
@@ -100,39 +113,13 @@ Here are some helpful hints:
 - Erosion and dilation are a great way to remove outliers and give your cone a bit more of a defined shape.
 - OpenCV contour functions can prove very helpful. cv2.findContours + cv2.boundingRect are a powerful combination. Just saying.
 
-Don’t forget conventions! Image indexing works like this (in this lab): (**TO MODIFY**)
+Don’t forget conventions! Image indexing works like this (in this lab):
 
 ![](media/image_axis_convention.jpg)
 
-### Evaluation: (TODO MODIFY)
+### Evaluation:
 We are using the Intersection Over Union metric for evaluating bounding box success. Run **python cv_test.py cone color** to test your algorithm against our dataset. We print out the IOU values for you. We expect some sort of analysis involving this metric in your presentation.
 By the way- you won’t get them all (probably). But 100% accuracy is not necessary for a great parking controller.
-
-### Line Follower Extension: (TODO MODIFY)
-After you and your team put your modules together to park in front of a cone, a quick modification of your code will create a line follower. Like a donkey chasing a carrot, if you restrict the view of your robot to what is a little ahead of it you will follow an orange line.
-
-This works by setting a lookahead distance. See an example [here](https://gfycat.com/SeveralQueasyAmberpenshell).
-
-![](media/orange_circle.jpg)
-![](media/blacked_out_circle.jpg)
-
-Check out [this](https://www.youtube.com/watch?v=uSGnbyWg3_g) demo of what your robot can do. 
-There will be several tape "courses" set up throughout the lab. Your racecar should be able to drive around them in a controlled manner - not getting lost or cutting corners. Once you can drive around the course, see how fast you can go.        
-
-**Testing on Datasets** (TODO MODIFY)        
-We have implemented a few datasets for you to test your algorithms with.  To run the Sift tests, type in (inside the **computer_vision** folder): 
-- **python cv_test.py cone sift**
-- **python cv_test.py citgo sift**
-- **python cv_test.py map sift**            
-
-To test your template matching:
-- **python cv_test.py cone template**
-- **python cv_test.py map template**
-- **python cv_test.py citgo template**            
-
-Some of these algorithm + dataset combinations will not produce good results. Each algorithm has different strong suits. Do you see why?
-
-Note: The templates are all greyscale. We are not doing anything with color in these algorithms.  
 
 # Module 3: Locating the cone via **Homography Transformation** (TODO MODIFY)
 In this section you will use the camera to determine the position of a cone relative to the racecar. This module of the lab involves working on the car. 
@@ -217,6 +204,41 @@ Tips:
 - Adjust the axes with the icon that looks like a green checkmark (top left menu bar).
 
 You will be using these plots to demonstrate controller performance for your presentation. 
+
+# Line Follower
+After you and your team put your modules together to park in front of a cone, a modification of your code will create a controller for a line follower. Like a donkey chasing a carrot, if you restrict the view of your robot to what is a little ahead of it you will follow a colored line.
+
+This works by setting a lookahead distance. See an example [here](https://gfycat.com/SeveralQueasyAmberpenshell).
+
+![](media/orange_circle.jpg)
+![](media/blacked_out_circle.jpg)
+
+We're going to be doing a realistic line follower on the road in simulation! You are going to be following the center line of the road. 
+
+![](media/tesse-road.png)
+
+Here is the view from the semantic segmentation, and as you can see the lane markers are dark blue here: 
+
+![](media/tesse-road-seg-cam.png)
+
+Sometimes the lanes are double lines and sometimes they are dashed, so first we're going to write a node that extracts a single approximated line from our images in slope-intercept form (y = mx + b).
+
+First you'll want to find the semantic label and color that identify the lane marker. The semantic label associated with our lane marker is in `params_tesse.yaml`. You can then extract the rgba value associated with that semantic label from `tesse_windridge_city_scene_segmentation_mapping.csv`.
+
+Then you'll want to apply a mask over your image just like in cone detection to keep just the lane markers. What else can you mask out? (hint: There probably won't be any lanes in the sky.) Dilation is a good way to exagerate the road lines (relevant for the dashed ones) so they don't dissapear in the next line finding step! 
+
+The meat and potatoes of this module is the [Hough Line Transform](https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_houghlines/py_houghlines.html). This will allow you to detect broken and imperfect lines in the image. In practice you will end up with many hough lines like so: 
+![](media/hough-lines-many.png), so you will need to average them to be one single line.
+The averaged line should be like the red line below:
+![](media/hough-line-average.png)
+
+Once you have the m and b of this averaged line, publish your line parameters to the `lane_line_topic` specified in `params_tesse.yaml` using the provided `LaneLine.msg` type. 
+
+We have provided you a node that uses the homography transformation to convert pixels to plane coordinates, and therefore enable you to project a point on your line in from the image plane to the ground with respect to your robot! 
+
+Now you're ready to choose a lookahead distance on your line and use your parking controller to follow it. 
+
+
 
 ### General Tips/FAQ:
  
