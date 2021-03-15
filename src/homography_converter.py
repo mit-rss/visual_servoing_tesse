@@ -23,9 +23,10 @@ class HomographyConverter():
             CameraInfo, self.seg_cam_info_callback)
 
         self.seg_intrinsic_matrix = None
-        self.seg_extrinsic_matrix = np.array([[1, 0, 0, -0.05],
-                                              [0, 1, 0, 0.0],
-                                              [0, 0, 1, 0.0]])
+        self.seg_extrinsic_matrix = np.eye(3)
+                                    #np.array([[1, 0, 0, -0.05],
+                                    #          [0, 1, 0, 0.0],
+                                    #          [0, 0, 1, 0.0]])
 
         # Subscribe to clicked point messages from rviz  
         #RELATIVE_CONE_PX_TOPIC = rospy.get_param("relative_cone_px_topic")
@@ -140,27 +141,27 @@ class HomographyConverter():
 
     def line_callback(self, msg):
         # get line parameters
-        pm = msg.line.m
-        pb = msg.line.b
+        pm = msg.m
+        pb = msg.b
 
         # get two points on the line
-        px0, py0 = 0, b
-        px1, py1 = 1, m+b
+        px0, py0 = 0, pb
+        px1, py1 = 1, pm+pb
 
         # apply homography matrix
         if self.seg_intrinsic_matrix is None or self.seg_extrinsic_matrix is None:
             return
 
-        '''
+        
         # (hardcoded for now)
-        H = np.array([[ 2.31630946e-05 -3.50827978e-05 -3.72600692e-01]
-                      [ 1.09022607e-03 -2.89622858e-04 -3.13292098e-01]
-                      [ 8.58918330e-05 -5.64162792e-03  1.00000000e+00]])
+        H = np.array([[ 2.31630946e-05, -3.50827978e-05, -3.72600692e-01],
+                      [ 1.09022607e-03, -2.89622858e-04, -3.13292098e-01],
+                      [ 8.58918330e-05, -5.64162792e-03,  1.00000000e+00]])
         '''
 
         H = np.linalg.inv(np.matmul(self.seg_intrinsic_matrix,
                                     self.seg_extrinsic_matrix))
-
+        '''
         CAM_PT_0 = np.array([px0, py0, 1]).T
         CAM_PT_1 = np.array([px1, py1, 1]).T
 
