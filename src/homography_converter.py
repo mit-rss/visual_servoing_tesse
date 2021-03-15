@@ -27,6 +27,7 @@ class HomographyConverter():
         self.seg_extrinsic_matrix = np.array([[-1, 0, 0, -0.05],
                                               [0, -1, 0, 1.03],
                                               [0, 0, 1, 1.5]])
+        self.homography_matrix = None
 
         # Subscribe to clicked point messages from rviz  
         #RELATIVE_CONE_PX_TOPIC = rospy.get_param("relative_cone_px_topic")
@@ -105,7 +106,7 @@ class HomographyConverter():
     def seg_cam_info_callback(self, msg):
         self.seg_intrinsic_matrix = np.array(msg.K).reshape((3, 3))
 
-        # too lazy to get the closed form equation correct atm
+        # we could get some closed form equations if we wanted, but this is easier for now.
         # pick some points in the ground plane
 
         PTS_GROUND_PLANE = np.array([[1.0, 0.0, 2.5, 1],
@@ -148,13 +149,13 @@ class HomographyConverter():
 
         '''
         # (hardcoded for now)
-        H = np.array([[ 2.31630946e-05 -3.50827978e-05 -3.72600692e-01]
-                      [ 1.09022607e-03 -2.89622858e-04 -3.13292098e-01]
-                      [ 8.58918330e-05 -5.64162792e-03  1.00000000e+00]])
+        H = np.array([[ 2.31630946e-05, -3.50827978e-05, -3.72600692e-01],
+                      [ 1.09022607e-03, -2.89622858e-04, -3.13292098e-01],
+                      [ 8.58918330e-05, -5.64162792e-03,  1.00000000e+00]])
+        rospy.loginfo(H)
         '''
 
-        H = np.linalg.inv(np.matmul(self.seg_intrinsic_matrix,
-                                    self.seg_extrinsic_matrix))
+        H = self.homography_matrix
 
         CAM_PT = np.array([px, py, 1]).T
 
@@ -163,8 +164,9 @@ class HomographyConverter():
 
         x, y = WORLD_PT[0], WORLD_PT[1] # coordinates in world frame
 
-        self.message_x = x
-        self.message_y = y
+        # switch to rviz coordinate system
+        self.message_x = y
+        self.message_y = x * -1
         self.message_frame = "base_link"
         
         # Draw a marker for visualization
@@ -176,27 +178,22 @@ class HomographyConverter():
         pm = msg.m
         pb = msg.b
 
-        # get two points on the line
+        # get two points on the line (pixel coordinates)
         px0, py0 = 200, pm*200+pb
         px1, py1 = 300, pm*300+pb
 
-        print('p0, p1', (px0, py0), (px1, py1))
-
         # apply homography matrix
+
         if self.seg_intrinsic_matrix is None or self.seg_extrinsic_matrix is None:
             return
 
-        
+        '''
         # (hardcoded for now)
         H = np.array([[ 2.31630946e-05, -3.50827978e-05, -3.72600692e-01],
                       [ 1.09022607e-03, -2.89622858e-04, -3.13292098e-01],
                       [ 8.58918330e-05, -5.64162792e-03,  1.00000000e+00]])
         rospy.loginfo(H)
-
-        #H2 = np.linalg.inv(np.matmul(self.seg_intrinsic_matrix,
-         #                           self.seg_extrinsic_matrix))
-
-        #rospy.loginfo(H2)
+        '''
 
         H = self.homography_matrix
         
@@ -212,9 +209,7 @@ class HomographyConverter():
         x0, y0 = WORLD_PT_0[0], WORLD_PT_0[1] # coordinates in world frame
         x1, y1 = WORLD_PT_1[0], WORLD_PT_1[1] # coordinates in world frame
 
-        print("w0, w1", (x0, y0), (x1, y1))
-
-        # get back the parameterized line in the world frame
+        # find the parameterized line in the world frame using our two tranformed points
         m = (y1 - y0) / (x1 - x0)
         b = y0 - m * x0
 
@@ -222,9 +217,9 @@ class HomographyConverter():
         ylook = self.LOOKAHEAD_DISTANCE
         xlook = (ylook - b) / m
 
-        rospy.loginfo(("xlook", xlook))
+        #rospy.loginfo(("xlook", xlook))
 
-
+        # switch to rviz coordinate system
         self.message_x = ylook
         self.message_y = xlook * -1
         self.message_frame = "base_link"
