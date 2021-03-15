@@ -92,10 +92,11 @@ Cone Parking Vision Node:
 
 Homography Node:
  - Subscribes: /relative_cone_px: pose message
- - Subscribes: /lane_line_px: line message
  - Publishes: /relative_cone: pose message
-
-Control Node:
+Parking Controller Node:
+- Subscribes: /relative_cone: Pose in pixel space
+- Publishes drive Commands: Drive commands AckermannDriveStamped
+Line Follower Controller Node:
 - Subscribes: /relative_cone: pose message
 
 # Module 1: Cone Detection Via Color Segmentation
