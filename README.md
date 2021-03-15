@@ -31,9 +31,9 @@ This lab has a lot in it, so we are encouraging parallelization by breaking up t
 Here’s how they fit together. 
 
 ### Bringing it together:
-The first module of this lab asks you to find an orange cone in images. Here you will learn/practice some computer vision algorithms that will help you locate the cone. The second module asks you to reuse your algorithms from module 1 to find a cone in the tesse simulated environment and a transformation to convert the pixel space location of the cone to 3D world space. You will then develop a controller to help you park the car in front of the cone. 
+The first module of this lab asks you to find an orange cone in images. Here you will learn/practice some computer vision algorithms that will help you locate the cone. The second module asks you to reuse your algorithms from module 1 to find a cone in the tesse simulated environment and then use a transformation to convert the pixel space location of the cone to 3D world space. You will then develop a controller to help you park the car in front of the cone. 
 
-In third module, you will be able to extend your image detection and parking controller from module 1 & 2, to follow a dashed line tesse.You can see how each module builds on top of the previous one.  
+In the third module, you will be able to extend your image detection and parking controller from module 1 & 2, to follow a dashed line in tesse. You can see how each module builds on top of the previous one.  
 
 ### Computer Setup
 For this lab, you will need Opencv3. The virtual machines already have it, but it likely needs to be updated to 3.4 and are missing the opencv-contrib package (this is where some propietary algorithms were moved to in opencv3). If you are running linux natively, depending on what you've done before you may or may not have the correct setup. Try running these commands as well, and the correct packages will install as needed.
