@@ -68,17 +68,17 @@ When you wrote the parking controller (module <INSERT HERE>), you published erro
 - Run the car on one of our tracks, and check out the plots for any interesting error signals. Compare plots at different speeds, and see how error signals change with speed.
 ### Grading: /10 (TODO MODIFY)
 Technical implementation
-- 1 point for satisfactory completion of module 1
-- 1 point for satisfactory completion of module 2
-- 1 point for satisfactory completion of module 3
-- 1 point for satisfactory completion of module 4
-- 1 point for successful integration of the 4 components
+- 1/2 points for satisfactory completion of module 1
+- 1/2 points for satisfactory completion of module 2
+- 1/2 points for satisfactory completion of module 3
+- 1/2 points for satisfactory completion of module 4
+
 
 Evaluation (include in presentation): (TODO MODIFY)
-- 2 points for explaining vision algorithm strengths and weaknesses. Why does each algorithm perform as it does on each dataset?
+- 1 point for explaining vision algorithm used/implemented. Why does each algorithm perform as it does on each module?
 - 1 point for explaining the homography transformation. How do we convert pixels to plane coordinates?
-- 1 point for demonstrating and explaining performance of the parking controller. Make sure you mention your method for tuning the controller gains. Hint: include error plots from **rqt_plot**
-- 1 point for demonstrating and explaining performance of the line-follower. Make sure you mention your method for tuning the controller gains. Hint: include error plots from **rqt_plot**
+- 2 point for demonstrating and explaining performance controllers. Make sure you mention your method for tuning the controller gains for both parking and line-following. Hint: include error plots from **rqt_plot**
+- 1 point for demonstrating and explaining hough-transformations to extract the line from the dashed road line-dividers. 
 
 # Nodes
 
@@ -122,10 +122,10 @@ Don’t forget conventions! Image indexing works like this (in this lab):
 We are using the Intersection Over Union metric for evaluating bounding box success. Run **python cv_test.py cone color** to test your algorithm against our dataset. We print out the IOU values for you. We expect some sort of analysis involving this metric in your presentation.
 By the way- you won’t get them all (probably). But 100% accuracy is not necessary for a great parking controller.
 
+# Module 2: Homography Transformation(TODO)
 
 
-
-# Module 2: Parking in front of Cone in Tesse
+# Module 3: Parking in front of Cone in Tesse
   Segmentation      | Cone in mask
 --------------------|---------------------------
 ![](media/cone.png) | ![](media/cone-threshold.png)
@@ -154,8 +154,7 @@ We aren’t aiming to give you a specific algorithm to run your controller, and 
 - How can we keep the cone in frame when we are using our real camera?
 
 
-
-# Line Follower
+# Module 4: Line Follower
 After you and your team put your modules together to park in front of a cone, a modification of your code will create a controller for a line follower. Like a donkey chasing a carrot, if you restrict the view of your robot to what is a little ahead of it you will follow a colored line.
 
 This works by setting a lookahead distance. See an example [here](https://gfycat.com/SeveralQueasyAmberpenshell).
