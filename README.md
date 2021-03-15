@@ -25,15 +25,15 @@ In this lab, your team will do the following:
 ### Lab Modules
 This lab has a lot in it, so we are encouraging parallelization by breaking up the components of the lab into <TODO> distinct modules, which you will combine together. Each module tackles an interesting problem in computer vision/controls.  
 - Module 1: Cone Detection via Color Segmentation
-- Module 2:
+- Module 2: Parking in front of a cone in Tesse 
 - Module 3: Line Detection via Hough Transforms
-- Module ?:
 
-Here’s how they fit together. TODO
+Here’s how they fit together. 
 
 ### Bringing it together:
-Here are suggested steps:
-TODO
+The first module of this lab asks you to find an orange cone in images. Here you will learn/practice some computer vision algorithms that will help you locate the cone. Module 2 asks you to reuse your algorithms from module to find a cone in tesse simulation and a transformation to convert the pixel space location of the cone to 3D world space. You will then develop a controller to help you park the car in front of the cone. 
+
+In module 3, you will be able to extend your image detection and parking controller from module 1 & 2, to follow a dashed line tesse. I hope you can visualize each module builds on top of the previous one.  
 
 ### Computer Setup
 For this lab, you will need Opencv3. The virtual machines already have it, but it likely needs to be updated to 3.4 and are missing the opencv-contrib package (this is where some propietary algorithms were moved to in opencv3). If you are running linux natively, depending on what you've done before you may or may not have the correct setup. Try running these commands as well, and the correct packages will install as needed.
