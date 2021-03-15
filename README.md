@@ -128,6 +128,7 @@ In this section you will use the camera to determine the position of objects in 
 
 ### Converting pixel coordinates to x-y coordinates
 If you recall from lecture, a camera is a sensor that converts 3D points (x,y,z) into 2D pixels (u,v). If we put on our linear algebra hats, we can take a peek at the projection of a 3D point to a 2D point:
+
 ![](media/homography.jpg)
 
 In robotics, we are generally concerned with the inverse problem. Given a 2D (image) point, how can we extract a 3D (world) point?
