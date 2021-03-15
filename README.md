@@ -1,7 +1,7 @@
 | Deliverable | Due Date              |
 |---------------|----------------------------------------------------------------------------|
-| Briefing   | Wednesday, March 24th at 1:00PM EST     |
-| [Team Member Assessment](todo link here)  | Friday, March 26th at 11:59PM EST |
+| Briefing   | Wednesday, March 24th at 1:00PM EDT     |
+| [Team Member Assessment](https://docs.google.com/forms/d/e/1FAIpQLSc--nSO-ml92FV00CBpUzuo6Nk8dNRFLSzMrIfgBwc9WyEgjQ/viewform?usp=sf_link)  | Friday, March 26th at 11:59PM EDT |
 
 # Lab 4: Vision In Tesse
 
@@ -25,15 +25,15 @@ In this lab, your team will do the following:
 ### Lab Modules
 This lab has a lot in it, so we are encouraging parallelization by breaking up the components of the lab into <TODO> distinct modules, which you will combine together. Each module tackles an interesting problem in computer vision/controls.  
 - Module 1: Cone Detection via Color Segmentation
-- Module 2:
+- Module 2: Parking in front of a cone in Tesse 
 - Module 3: Line Detection via Hough Transforms
-- Module ?:
 
-Here’s how they fit together. TODO
+Here’s how they fit together. 
 
 ### Bringing it together:
-Here are suggested steps:
-TODO
+The first module of this lab asks you to find an orange cone in images. Here you will learn/practice some computer vision algorithms that will help you locate the cone. The second module asks you to reuse your algorithms from module 1 to find a cone in the tesse simulated environment and then use a transformation to convert the pixel space location of the cone to 3D world space. You will then develop a controller to help you park the car in front of the cone. 
+
+In the third module, you will be able to extend your image detection and parking controller from module 1 & 2, to follow a dashed line in tesse. You can see how each module builds on top of the previous one.  
 
 ### Computer Setup
 For this lab, you will need Opencv3. The virtual machines already have it, but it likely needs to be updated to 3.4 and are missing the opencv-contrib package (this is where some propietary algorithms were moved to in opencv3). If you are running linux natively, depending on what you've done before you may or may not have the correct setup. Try running these commands as well, and the correct packages will install as needed.
@@ -125,12 +125,19 @@ By the way- you won’t get them all (probably). But 100% accuracy is not necess
 
 
 # Module 2: Parking in front of Cone in Tesse
+  Segmentation      | Cone in mask
+--------------------|---------------------------
+![](media/cone.png) | ![](media/cone-threshold.png)
 
-In this section, you will detect a cone using the segmentation camera of the tesse simulator. You will then drive your car(tesse car) towards the cone, and finally park the car in front of the cone. This task takes three steps to complete:
+In this section, you will detect a cone using the segmentation camera of the tesse simulator. You will then drive your car(tesse car) towards the cone, and finally park the car in front of the cone. 
 
-**step 1**: Using the algorithms(e.g. color segmentation) you have practiced in the first module of this lab and the segmentation camera of the tesse car, you need to find the location of the cone in the view of the camera. We provided a skeleton code that subscribes to the proper messages for you, `src/cone_detector.py`. Your task is to find the center of the cone and publish that to the topic "/relative_cone" using the geometry message [Point](http://docs.ros.org/en/jade/api/geometry_msgs/html/msg/Point.html).
+This task takes three steps to complete:
 
-To simplify things for you, we provided launch file(launch/cone_parking.launch(MAKE THIS)) within tesse_ros_bridge which drops the car near the cone at a reasonable angle and distance. We also provided the segmentation label, RGB color, of the cone which is defined at the top `src/cone_detector.py` class as `SEG_LABEL`.
+**step 1**: Using the algorithms(e.g. color segmentation) you have practiced in the first module of this lab and the segmentation camera of the tesse car, you need to find the location of the cone in the view of the camera. We provided a skeleton code that subscribes to the proper messages for you, `scripts/cone_detector.py`. Your task is to find the center of the cone and publish that to the topic "/relative_cone" using the geometry message [Point](http://docs.ros.org/en/jade/api/geometry_msgs/html/msg/Point.html).
+
+To simplify things for you, we provided launch file(launch/cone_parking.launch) within tesse_ros_bridge which drops the car near the cone at a reasonable angle and distance. We also provided the segmentation label, RGB color, of the cone which is defined at the top `scripts/cone_detector.py` class as `SEG_LABEL`.
+
+When launching the tesse ros bridge for parking and cone find in tesse please run `roslaunch tesse_ros_bridge cone_parking.launch` instead of the normal launch file. For module 3 you will use the usually launch file.
 
 **step 2**: Use the homography matrix to transform the point you have published in **step 1** from image coordinate to world coordinate. We have implemented the homography matrix calculation for you, so all you need to do is to use the provided function to do the transformation. This homography node should subscribe to your point in image coordinates and publish a point in world (meters) coordinates. To understand the homography matrix and how you can compute it, we provided a section of the previous year's lab4 which explains where the homography matrix is coming from.
 
