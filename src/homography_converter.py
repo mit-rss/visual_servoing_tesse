@@ -17,7 +17,8 @@ class HomographyConverter():
     def __init__(self):
 
         # Subscribe to camera transform info
-        SEG_CAM_INFO_TOPIC = rospy.get_param("seg_cam_info_topic")
+        #SEG_CAM_INFO_TOPIC = rospy.get_param("seg_cam_info_topic")
+        SEG_CAM_INFO_TOPIC = "/tesse/seg_cam/camera_info"
         rospy.Subscriber(SEG_CAM_INFO_TOPIC, 
             CameraInfo, self.seg_cam_info_callback)
 
@@ -28,7 +29,8 @@ class HomographyConverter():
 
         # Subscribe to clicked point messages from rviz  
         #RELATIVE_CONE_PX_TOPIC = rospy.get_param("relative_cone_px_topic")
-        LANE_LINE_TOPIC = rospy.get_param("lane_line_topic")
+        #LANE_LINE_TOPIC = rospy.get_param("lane_line_topic")
+        LANE_LINE_TOPIC = "/lane_line"
 
         rospy.Subscriber("/relative_cone_px", 
             PointStamped, self.point_callback)
@@ -179,7 +181,7 @@ class HomographyConverter():
         xlook = self.LOOKAHEAD_DISTANCE
         ylook = m * xlook + b
 
-        rospy.loginfo("ylook: ", ylook)
+        rospy.loginfo(("ylook", ylook))
 
 
         self.message_x = xlook
