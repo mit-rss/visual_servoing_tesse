@@ -154,7 +154,7 @@ To find the homography matrix, you should first determine the pixel coordinates 
 
 Many existing packages including [OpenCV](https://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html#findhomography) can be used to compute homography matrices. 
 
-`rqt_image_view` will be a useful debugging tool here. If you enable mouse clicking (there is a checkbox next to the topic name), then `rqt_image_view` will publish the pixel coordinates of points you click on in the image to a topic like this: `/zed/rgb/image_rect_color_mouse_left`. Publish a marker to RVIZ using this pixel, and you should be able to quickly tell if your homography matrix is doing its job.
+We have provided you with an (almost-complete) `HomographyConverter` node. This node subscribes to a 
 
 
 # Module 3: Parking in front of Cone in Tesse
