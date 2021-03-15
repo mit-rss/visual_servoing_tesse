@@ -4,6 +4,7 @@ from geometry_msgs.msg import PointStamped
 import tf
 from tf.transformations import euler_from_quaternion
 import numpy as np
+import cv2
 from visual_servoing_tesse.msg import cone_location, LaneLine
 from visualization_msgs.msg import Marker
 from sensor_msgs.msg import CameraInfo
@@ -23,10 +24,9 @@ class HomographyConverter():
             CameraInfo, self.seg_cam_info_callback)
 
         self.seg_intrinsic_matrix = None
-        self.seg_extrinsic_matrix = np.eye(3)
-                                    #np.array([[1, 0, 0, -0.05],
-                                    #          [0, 1, 0, 0.0],
-                                    #          [0, 0, 1, 0.0]])
+        self.seg_extrinsic_matrix = np.array([[-1, 0, 0, -0.05],
+                                              [0, -1, 0, 1.03],
+                                              [0, 0, 1, 1.5]])
 
         # Subscribe to clicked point messages from rviz  
         #RELATIVE_CONE_PX_TOPIC = rospy.get_param("relative_cone_px_topic")
@@ -43,7 +43,7 @@ class HomographyConverter():
 
 
         # lookahead distance (tunable control parameter)
-        self.LOOKAHEAD_DISTANCE = 1.0
+        self.LOOKAHEAD_DISTANCE = 4.0
 
 
         self.cone_pub = rospy.Publisher("/relative_cone", 
@@ -105,6 +105,38 @@ class HomographyConverter():
     def seg_cam_info_callback(self, msg):
         self.seg_intrinsic_matrix = np.array(msg.K).reshape((3, 3))
 
+        # too lazy to get the closed form equation correct atm
+        # pick some points in the ground plane
+
+        PTS_GROUND_PLANE = np.array([[1.0, 0.0, 2.5, 1],
+                            [-1.0, 0.0, 2.5, 1],
+                            [1.0, 0.0, 3.5, 1],
+                            [-1.0, 0.0, 3.5, 1],])
+
+        PTS_IMAGE_PLANE = np.array([np.matmul(self.seg_intrinsic_matrix,
+                            np.matmul(self.seg_extrinsic_matrix,
+                                np.array(pt).T)
+                            ) for pt in PTS_GROUND_PLANE])
+
+        # normalize
+        PTS_IMAGE_PLANE = np.array([pt / pt[-1] for pt in PTS_IMAGE_PLANE])
+
+        #print(np.float32(PTS_GROUND_PLANE[:, [0, 2]]))
+        #print(np.float32(PTS_IMAGE_PLANE[:, [0, 1]]))
+
+
+        self.homography_matrix, err = cv2.findHomography(np.float32(PTS_IMAGE_PLANE[:, [0, 1]]), np.float32(PTS_GROUND_PLANE[:, [0, 2]]))
+
+        #print("error: ", err)
+
+        # verify homography
+        PTS_BACKPROJECTED = np.matmul(self.homography_matrix,  PTS_IMAGE_PLANE.T)
+        PTS_BACKPROJECTED = np.array([pt / pt[-1] for pt in PTS_BACKPROJECTED.T]).T
+
+        #print(PTS_BACKPROJECTED)
+        # verified to backproject fine
+
+
     def point_callback(self, msg):
         # get pixel coordinates
         px = msg.point.x
@@ -145,8 +177,10 @@ class HomographyConverter():
         pb = msg.b
 
         # get two points on the line
-        px0, py0 = 0, pb
-        px1, py1 = 1, pm+pb
+        px0, py0 = 200, pm*200+pb
+        px1, py1 = 300, pm*300+pb
+
+        print('p0, p1', (px0, py0), (px1, py1))
 
         # apply homography matrix
         if self.seg_intrinsic_matrix is None or self.seg_extrinsic_matrix is None:
@@ -157,11 +191,15 @@ class HomographyConverter():
         H = np.array([[ 2.31630946e-05, -3.50827978e-05, -3.72600692e-01],
                       [ 1.09022607e-03, -2.89622858e-04, -3.13292098e-01],
                       [ 8.58918330e-05, -5.64162792e-03,  1.00000000e+00]])
-        '''
+        rospy.loginfo(H)
 
-        H = np.linalg.inv(np.matmul(self.seg_intrinsic_matrix,
-                                    self.seg_extrinsic_matrix))
-        '''
+        #H2 = np.linalg.inv(np.matmul(self.seg_intrinsic_matrix,
+         #                           self.seg_extrinsic_matrix))
+
+        #rospy.loginfo(H2)
+
+        H = self.homography_matrix
+        
         CAM_PT_0 = np.array([px0, py0, 1]).T
         CAM_PT_1 = np.array([px1, py1, 1]).T
 
@@ -174,19 +212,21 @@ class HomographyConverter():
         x0, y0 = WORLD_PT_0[0], WORLD_PT_0[1] # coordinates in world frame
         x1, y1 = WORLD_PT_1[0], WORLD_PT_1[1] # coordinates in world frame
 
+        print("w0, w1", (x0, y0), (x1, y1))
+
         # get back the parameterized line in the world frame
         m = (y1 - y0) / (x1 - x0)
         b = y0 - m * x0
 
         # find the point on the line that is LOOKAHEAD_DISTANCE ahead of the robot
-        xlook = self.LOOKAHEAD_DISTANCE
-        ylook = m * xlook + b
+        ylook = self.LOOKAHEAD_DISTANCE
+        xlook = (ylook - b) / m
 
-        rospy.loginfo(("ylook", ylook))
+        rospy.loginfo(("xlook", xlook))
 
 
-        self.message_x = xlook
-        self.message_y = ylook * -1
+        self.message_x = ylook
+        self.message_y = xlook * -1
         self.message_frame = "base_link"
         
         # Draw a marker for visualization
