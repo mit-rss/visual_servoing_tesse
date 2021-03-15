@@ -228,9 +228,11 @@ First you'll want to find the semantic label and color that identify the lane ma
 Then you'll want to apply a mask over your image just like in cone detection to keep just the lane markers. What else can you mask out? (hint: There probably won't be any lanes in the sky.) Dilation is a good way to exagerate the road lines (relevant for the dashed ones) so they don't dissapear in the next line finding step! 
 
 The meat and potatoes of this module is the [Hough Line Transform](https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_houghlines/py_houghlines.html). This will allow you to detect broken and imperfect lines in the image. In practice you will end up with many hough lines like so: 
-![](media/hough-lines-many.png =250x), so you will need to average them to be one single line.
+<img src="media/hough-lines-many.png" width="400">
+
+, so you will need to average them to be one single line.
 The averaged line should be like the red line below:
-![](media/hough-line-average.png =250x)
+<img src="media/hough-line-average.png" width="400">
 
 Once you have the m and b of this averaged line, publish your line parameters to the `lane_line_topic` specified in `params_tesse.yaml` using the provided `LaneLine.msg` type. 
 
