@@ -100,7 +100,7 @@ Here are some helpful hints:
 - Erosion and dilation are a great way to remove outliers and give your cone a bit more of a defined shape.
 - OpenCV contour functions can prove very helpful. cv2.findContours + cv2.boundingRect are a powerful combination. Just saying.
 
-Don’t forget conventions! Image indexing works like this (in this lab):
+Don’t forget conventions! Image indexing works like this (in this lab): (**TO MODIFY**)
 
 ![](media/image_axis_convention.jpg)
 
