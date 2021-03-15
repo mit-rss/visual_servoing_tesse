@@ -7,13 +7,13 @@
 
 Welcome to Lab 4, where you will learn how to use the semantic segmentation camera in tesse to allow the racecar to park using a colored cone and follow lines!
 
-The semantic segmentation camera provides images that classify every object in the image by displaying them with a different color according to the object label. (You can see the camera images when you run `rqt_image_view` after your tesse-ros-bridge node and executable are up and running.) 
+The semantic segmentation camera provides images that classify every object in the image by displaying them with a different color according to the object label. (You can see the camera images when you run `rqt_image_view` after your tesse-ros-bridge node and executable are up and running.)
 
 The images from the semantic segmentation camera look something like this:
 
 ![](media/tesse-road-seg-cam.png)
 
-We provide you with a csv file that maps these semantic class labels to the rgba colors in the image, and you will do a combination of image processing and control to complete the tasks in this lab. 
+We provide you with a csv file that maps these semantic class labels to the rgba colors in the image, and you will do a combination of image processing and control to complete the tasks in this lab.
 
 In this lab, your team will do the following:
 * Experiment with object detection algorithms
@@ -25,9 +25,9 @@ In this lab, your team will do the following:
 ### Lab Modules
 This lab has a lot in it, so we are encouraging parallelization by breaking up the components of the lab into <TODO> distinct modules, which you will combine together. Each module tackles an interesting problem in computer vision/controls.  
 - Module 1: Cone Detection via Color Segmentation
-- Module 2: 
+- Module 2:
 - Module 3: Line Detection via Hough Transforms
-- Module ?: 
+- Module ?:
 
 Here’s how they fit together. TODO
 
@@ -121,17 +121,79 @@ Don’t forget conventions! Image indexing works like this (in this lab):
 We are using the Intersection Over Union metric for evaluating bounding box success. Run **python cv_test.py cone color** to test your algorithm against our dataset. We print out the IOU values for you. We expect some sort of analysis involving this metric in your presentation.
 By the way- you won’t get them all (probably). But 100% accuracy is not necessary for a great parking controller.
 
-# Module 3: Locating the cone via **Homography Transformation** (TODO MODIFY)
-In this section you will use the camera to determine the position of a cone relative to the racecar. This module of the lab involves working on the car. 
+
+
+
+# Module 2: Parking in front of Cone in Tesse
+
+In this section, you will detect a cone using the segmentation camera of the tesse simulator. You will then drive your car(tesse car) towards the cone, and finally park the car in front of the cone. This task takes three steps to complete:
+
+**step 1**: Using the algorithms(e.g. color segmentation) you have practiced in the first module of this lab and the segmentation camera of the tesse car, you need to find the location of the cone in the view of the camera. We provided a skeleton code that subscribes to the proper messages for you, `src/cone_detector.py`. Your task is to find the center of the cone and publish that to the topic "/relative_cone" using the geometry message [Point](http://docs.ros.org/en/jade/api/geometry_msgs/html/msg/Point.html).
+
+To simplify things for you, we provided launch file(launch/cone_parking.launch(MAKE THIS)) within tesse_ros_bridge which drops the car near the cone at a reasonable angle and distance. We also provided the segmentation label, RGB color, of the cone which is defined at the top `src/cone_detector.py` class as `SEG_LABEL`.
+
+**step 2**: Use the homography matrix to transform the point you have published in **step 1** from image coordinate to world coordinate. We have implemented the homography matrix calculation for you, so all you need to do is to use the provided function to do the transformation. This homography node should subscribe to your point in image coordinates and publish a point in world (meters) coordinates. To understand the homography matrix and how you can compute it, we provided a section of the previous year's lab4 which explains where the homography matrix is coming from.
+
+
+**Step 3**: Implement a controller that drives the car towards the cone until you're desired distance away and at a desired angle. Open up `scripts/parking_controller.py`, We’ve subscribed to the “/relative_cone” topic for you, and have set up the publisher/callback as well. Your job is to take the cone location message from **step 2**, and write a control policy that parks in front of the cone. Publish desired steering angles and velocity just like in lab2.
+
+We aren’t aiming to give you a specific algorithm to run your controller, and we encourage you to play around. Try answering these questions:
+- What should the robot do if the cone is far in front?
+- What should the robot do if it is too close?
+- What if the robot isn’t too close or far, but the cone isn’t directly in front of the robot?
+- How can we keep the cone in frame when we are using our real camera?
+
+
+
+# Line Follower
+After you and your team put your modules together to park in front of a cone, a modification of your code will create a controller for a line follower. Like a donkey chasing a carrot, if you restrict the view of your robot to what is a little ahead of it you will follow a colored line.
+
+This works by setting a lookahead distance. See an example [here](https://gfycat.com/SeveralQueasyAmberpenshell).
+
+![](media/orange_circle.jpg)
+![](media/blacked_out_circle.jpg)
+
+We're going to be doing a realistic line follower on the road in simulation! You are going to be following the center line of the road.
+
+![](media/tesse-road.png)
+
+Here is the view from the semantic segmentation, and as you can see the lane markers are dark blue here:
+
+![](media/tesse-road-seg-cam.png)
+
+Sometimes the lanes are double lines and sometimes they are dashed, so first we're going to write a node that extracts a single approximated line from our images in slope-intercept form (y = mx + b).
+
+First you'll want to find the semantic label and color that identify the lane marker. The semantic label associated with our lane marker is in `params_tesse.yaml`. You can then extract the rgba value associated with that semantic label from `tesse_windridge_city_scene_segmentation_mapping.csv`.
+
+Then you'll want to apply a mask over your image just like in cone detection to keep just the lane markers. What else can you mask out? (hint: There probably won't be any lanes in the sky.) Dilation is a good way to exagerate the road lines (relevant for the dashed ones) so they don't dissapear in the next line finding step!
+
+The meat and potatoes of this module is the [Hough Line Transform](https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_houghlines/py_houghlines.html). This will allow you to detect broken and imperfect lines in the image. In practice you will end up with many hough lines like so:
+<img src="media/hough-lines-many.png" width="400">
+
+, so you will need to average them to be one single line.
+The averaged line should be like the red line below:
+<img src="media/hough-line-average.png" width="400">
+
+Once you have the m and b of this averaged line, publish your line parameters to the `lane_line_topic` specified in `params_tesse.yaml` using the provided `LaneLine.msg` type.
+
+We have provided you a node that uses the homography transformation to convert pixels to plane coordinates, and therefore enable you to project a point on your line in from the image plane to the ground with respect to your robot!
+
+Now you're ready to choose a lookahead distance on your line and use your parking controller to follow it.
+
+
+## Homography Transformation
+This section is just you give you a quck overview of what the homography matrix is and how to compute it. **Note**, there are no deliverable in this section. If you're curios, please keep reading.
+
+In this section you will use the camera to determine the position of a cone relative to the racecar. This module of the lab involves working on the car.
 ### Launching the ZED Camera
 - On the car, use `roslaunch zed_wrapper zed.launch` to launch ZED
 - See lab 1 for instructions on how to export ROS_MASTER, then run `rqt_image_view` from your host computer
-The ZED publishes to a number of topics topics which you can learn about [here](https://docs.stereolabs.com/integrations/ros/getting-started/#displaying-zed-data). To view them, select the topic name through the dropdown menu. Do not use the depth image for this lab. The one you probably want to use is the default rectified camera: `/zed/rgb/image_rect_color`. If your ZED camera is not working, try running this script `~/zed/compiled_samples/ZED_Camera_Control`. 
+The ZED publishes to a number of topics topics which you can learn about [here](https://docs.stereolabs.com/integrations/ros/getting-started/#displaying-zed-data). To view them, select the topic name through the dropdown menu. Do not use the depth image for this lab. The one you probably want to use is the default rectified camera: `/zed/rgb/image_rect_color`. If your ZED camera is not working, try running this script `~/zed/compiled_samples/ZED_Camera_Control`.
 
 ### Accessing Image Data (TODO MODIFY)
 Write a ros subscriber for ZED camera topic.
-The ZED camera publishes message of type [Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html) from sensor_msgs. 
-Learn about this message with the rosmsg command, `rosmsg show sensor_msgs/Image`. 
+The ZED camera publishes message of type [Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html) from sensor_msgs.
+Learn about this message with the rosmsg command, `rosmsg show sensor_msgs/Image`.
 The image data is in ROS message data-structure which is not directly recognized by OpenCV, you might have also learned that OpenCV image representations are sometimes unique and bizarre(e.g. BGR instead of RGB). To convert between CV image data structures(mat) to ROS image representations(ROS Message structures) you may find [CV bridge](http://wiki.ros.org/cv_bridge/Tutorials/ConvertingBetweenROSImagesAndOpenCVImagesPython) helpful.
 **NOTE: The velodyne cameras are upside down (fix with imutils.rotate() or similar)**
 
@@ -160,87 +222,8 @@ To find the homography matrix, you should first determine the pixel coordinates 
 
 ![](media/homography2.jpg)
 
-Many existing packages including [OpenCV](https://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html#findhomography) can be used to compute homography matrices. 
+Many existing packages including [OpenCV](https://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html#findhomography) can be used to compute homography matrices.
 
 `rqt_image_view` will be a useful debugging tool here. If you enable mouse clicking (there is a checkbox next to the topic name), then `rqt_image_view` will publish the pixel coordinates of points you click on in the image to a topic like this: `/zed/rgb/image_rect_color_mouse_left`. Publish a marker to RVIZ using this pixel, and you should be able to quickly tell if your homography matrix is doing its job.
 
-# Module 4: Controller for Parking and Line Following (TODO MODIFY)
-While your teammates are putting together the computer vision algorithms and localizing the cone, you will also implement a parking controller for the robot. We want you to implement a parking controller that parks your robot in front of a cone at a given distance. The robot will start with the cone in the field of view of the camera and should drive directly to the cone and park in front of it (1.5 - 2 feet from the front). Parking means facing the cone at the correct distance, not just stopping at the correct distance. See an example video [here](https://gfycat.com/ObeseVioletIcelandicsheepdog).
-
-![](media/parking_controller_diagram.jpg)
-
-The distance and angle don’t act independently so consider carefully how you should make them work together.
-
-Whenever possible, we want to develop controllers in simulation before deploying on real (breakable) hardware. That is what we’ll do here. After you download (and make) the lab 4 ros package, fire up your **roscore**, **simulator**, and **rviz**. 
-
-Now run `roslaunch lab4 parking_sim.launch`
-
-In rviz, press **publish point**(top options bar) and watch our representation of a cone appear. 
-Notes
-- Make sure to add the marker “/cone_marker” to rviz
-- In this lab, make sure you are in the “Map” frame or things might get weird.
-
-If you `rostopic echo /relative_cone`, you should be able to see the relative coordinates of the cone in the 'base_link' (control) frame.
-
-Open up `scripts/parking_controller.py`, We’ve subscribed to the “/relative_cone” topic for you, and have set up the publisher/callback as well. Your job is to take the cone_location message (either print or use a `rosmsg show lab4/cone_location` to find out what is in it), and write a control policy that parks in front of the cone. Publish desired steering angles and velocity just like in lab2.
-
-We aren’t aiming to give you a specific algorithm to run your controller, and we encourage you to play around. Try answering these questions:
-- What should the robot do if the cone is far in front?
-- What should the robot do if it is too close?
-- What if the robot isn’t too close or far, but the cone isn’t directly in front of the robot?
-- How can we keep the cone in frame when we are using our real camera?
-
-A good parking controller will work in simulation even when the cone is behind the robot. Of course, when we put this module together with the rest of the lab on the real robot, you won’t have the luxury of knowing the cone location when the camera can’t see it. 
-
-Please keep your desired velocities below 1 (meters/sec). Even though the simulator will behave at higher speeds, your real robot will not.
-
-The last thing for you to do is publish the x_error, y_error, and distance (`sqrt(x**2 + y**2)`) error. Fire up a terminal and type in: `rqt_plot`. A gui should emerge, which gives you the ability to view a live plot of (numerical) ros messages.
-
-![](media/rqt_plot.jpg)
-
-These plots are super useful in controller tuning/debugging (and any other time you need to plot some quantity over time).
-Tips: 
-- Type in the topic you want to graph in the top left of the gui.
-- Adjust the axes with the icon that looks like a green checkmark (top left menu bar).
-
-You will be using these plots to demonstrate controller performance for your presentation. 
-
-# Line Follower
-After you and your team put your modules together to park in front of a cone, a modification of your code will create a controller for a line follower. Like a donkey chasing a carrot, if you restrict the view of your robot to what is a little ahead of it you will follow a colored line.
-
-This works by setting a lookahead distance. See an example [here](https://gfycat.com/SeveralQueasyAmberpenshell).
-
-![](media/orange_circle.jpg)
-![](media/blacked_out_circle.jpg)
-
-We're going to be doing a realistic line follower on the road in simulation! You are going to be following the center line of the road. 
-
-![](media/tesse-road.png)
-
-Here is the view from the semantic segmentation, and as you can see the lane markers are dark blue here: 
-
-![](media/tesse-road-seg-cam.png)
-
-Sometimes the lanes are double lines and sometimes they are dashed, so first we're going to write a node that extracts a single approximated line from our images in slope-intercept form (y = mx + b).
-
-First you'll want to find the semantic label and color that identify the lane marker. The semantic label associated with our lane marker is in `params_tesse.yaml`. You can then extract the rgba value associated with that semantic label from `tesse_windridge_city_scene_segmentation_mapping.csv`.
-
-Then you'll want to apply a mask over your image just like in cone detection to keep just the lane markers. What else can you mask out? (hint: There probably won't be any lanes in the sky.) Dilation is a good way to exagerate the road lines (relevant for the dashed ones) so they don't dissapear in the next line finding step! 
-
-The meat and potatoes of this module is the [Hough Line Transform](https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_houghlines/py_houghlines.html). This will allow you to detect broken and imperfect lines in the image. In practice you will end up with many hough lines like so: 
-<img src="media/hough-lines-many.png" width="400">
-
-, so you will need to average them to be one single line.
-The averaged line should be like the red line below:
-<img src="media/hough-line-average.png" width="400">
-
-Once you have the m and b of this averaged line, publish your line parameters to the `lane_line_topic` specified in `params_tesse.yaml` using the provided `LaneLine.msg` type. 
-
-We have provided you a node that uses the homography transformation to convert pixels to plane coordinates, and therefore enable you to project a point on your line in from the image plane to the ground with respect to your robot! 
-
-Now you're ready to choose a lookahead distance on your line and use your parking controller to follow it. 
-
-
-
 ### General Tips/FAQ:
- 
