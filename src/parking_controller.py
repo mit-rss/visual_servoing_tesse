@@ -13,26 +13,28 @@ class ParkingController():
     def __init__(self):
         rospy.Subscriber("/relative_cone", cone_location, 
             self.relative_cone_callback)    
-        self.drive_pub = rospy.Publisher("/drive", 
+        self.drive_pub = rospy.Publisher("/tesse/drive", 
             AckermannDriveStamped, queue_size=10)
         self.error_pub = rospy.Publisher("/parking_error",
             parking_error, queue_size=10)
 
-        self.parking_distance = .75 #meters
+        self.parking_distance = .1 #meters
         self.relative_x = 0
         self.relative_y = 0
 
         rospy.logerr("initialized parking contrller")
 
     def relative_cone_callback(self, msg):
-        rospy.logerr("relative cone cb!")
+        
 
         self.relative_x = msg.x_pos
         self.relative_y = msg.y_pos
         angle_to_cone = np.arctan2(msg.y_pos, msg.x_pos)
         drive_cmd = AckermannDriveStamped()
 
-        if msg.x_pos < .5 or np.abs(msg.y_pos/msg.x_pos) > .3:
+        rospy.logerr(("relative cone cb!", self.relative_x, self.relative_y))
+
+        if msg.x_pos < .5:# or np.abs(msg.y_pos/msg.x_pos) > .3:
             drive_cmd.drive.speed = -1.0
             drive_cmd.drive.steering_angle = -1*angle_to_cone
         elif msg.x_pos > .5 and msg.x_pos < self.parking_distance:

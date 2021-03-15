@@ -43,7 +43,7 @@ class HomographyConverter():
 
 
         # lookahead distance (tunable control parameter)
-        self.LOOKAHEAD_DISTANCE = 0.5
+        self.LOOKAHEAD_DISTANCE = 1.0
 
 
         self.cone_pub = rospy.Publisher("/relative_cone", 
@@ -186,7 +186,7 @@ class HomographyConverter():
 
 
         self.message_x = xlook
-        self.message_y = ylook
+        self.message_y = ylook * -1
         self.message_frame = "base_link"
         
         # Draw a marker for visualization
