@@ -11,9 +11,14 @@ from sensor_msgs.msg import CameraInfo
 
 class HomographyConverter():
     """
-    Rosnode for transforming pixel-frame topics into world-frame cone poses. Subscribes
-    to a segmented line in the camera frame (lane_line_topic: LaneLine) AND a point in the
-    camera frame (/relative_cone_px: PointStamped). Publishes
+    Rosnode for transforming pixel-frame topics into world-frame cone poses. 
+
+    Subscribes to a segmented line in the camera frame (lane_line_topic: LaneLine) 
+    and publishes a dummy cone position at self.LOOKAHEAD_DISTANCE ahead (for line 
+    following) to /relative_cone.
+
+    Subscribes to a point in the camera frame (/relative_cone_px: PointStamped) and 
+    publishes the same point tranformed into the world frame to /relative_cone.
     """
     def __init__(self):
 
