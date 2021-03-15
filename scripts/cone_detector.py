@@ -4,7 +4,7 @@ import cv2 as cv
 import numpy as np
 import rospy
 from sensor_msgs.msg import Image
-from geometry_msgs.msg import Point
+from geometry_msgs.msg import PointStamped
 from cv_bridge import CvBridge
 
 class ConeDetector:
@@ -14,7 +14,7 @@ class ConeDetector:
     PUB_TOPIC = "/relative_cone"
     def __init__(self):
         self.sub = rospy.Subscriber(self.SUB_TOPIC, Image, self.callback);
-        self.pub = rospy.Publisher(self.PUB_TOPIC, Point, queue_size=5)
+        self.pub = rospy.Publisher(self.PUB_TOPIC, PointStamped, queue_size=5)
 
     def callback(self, msg):
         ###YOUR CODE HERES
