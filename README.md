@@ -122,7 +122,38 @@ Don’t forget conventions! Image indexing works like this (in this lab):
 We are using the Intersection Over Union metric for evaluating bounding box success. Run **python cv_test.py cone color** to test your algorithm against our dataset. We print out the IOU values for you. We expect some sort of analysis involving this metric in your presentation.
 By the way- you won’t get them all (probably). But 100% accuracy is not necessary for a great parking controller.
 
-# Module 2: Homography Transformation(TODO)
+# Module 2: Homography Transformation
+
+In this section you will use the camera to determine the position of objects in the world frame. To achieve this, you will need to understand and apply a relative transformation between coordinate frames.
+
+### Converting pixel coordinates to x-y coordinates
+If you recall from lecture, a camera is a sensor that converts 3D points (x,y,z) into 2D pixels (u,v). If we put on our linear algebra hats, we can take a peek at the projection of a 3D point to a 2D point:
+![](media/homography.jpg)
+
+In robotics, we are generally concerned with the inverse problem. Given a 2D (image) point, how can we extract a 3D (world) point?
+We need some tools and tricks to make that sort of calculation, as we lost (depth) information projecting down to our 2D pixel. Stereo cameras, for example, coordinate points seen from two cameras to add information and retrieve the X-Y-Z coordinates.
+In this lab, we will use another interesting fact about linear transformations for back out X-Y positions of pixels.
+
+### Coordinate space conversion
+The racecar can’t roll over or fly (no matter how cool it might look), so the ZED camera will always have a fixed placement with respect to the ground plane. By determining exactly what that placement is, we can compute a function that takes in image pixel coordinates (u, v) and returns the coordinates of the point on the floor (x, y) relative to the car that projects onto the pixel (u, v).
+
+This “function” is called a homography. Even though we can’t back out arbitrary 3D points from 2D pixels without lots of extra work, we can back out 2D world points if those points lie on a plane (and can therefore be thought of as 2D) that is fixed with respect to our camera.
+
+Check out this illustration of a camera and world plane. There exists a linear transformation between the camera projection and the world plane, since the world plane has two dimensions like an image plane.
+
+![](media/camera_diagram.jpg)
+### Find the Homography Matrix
+To find the homography matrix, you should first determine the pixel coordinates of several real world points. You should then measure the physical coordinates of these points on the 2D ground plane. If you gather enough of these point correspondences (at least 4), you have enough information to compute a homography matrix:
+
+#### Notes for finding the homography matrix:
+- The opencv findhomography implementation expects 3X1 data points in homogenous coordinates [X,Y,1].
+- You may need to rescale the homography output X',Y',Z' such that Z' = 1.
+
+![](media/homography2.jpg)
+
+Many existing packages including [OpenCV](https://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html#findhomography) can be used to compute homography matrices. 
+
+`rqt_image_view` will be a useful debugging tool here. If you enable mouse clicking (there is a checkbox next to the topic name), then `rqt_image_view` will publish the pixel coordinates of points you click on in the image to a topic like this: `/zed/rgb/image_rect_color_mouse_left`. Publish a marker to RVIZ using this pixel, and you should be able to quickly tell if your homography matrix is doing its job.
 
 
 # Module 3: Parking in front of Cone in Tesse
