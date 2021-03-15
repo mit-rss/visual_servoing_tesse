@@ -135,14 +135,14 @@ This task takes two steps to complete:
 
 **step 1**: Using the algorithms(e.g. color segmentation) you have practiced in the first module of this lab and the segmentation camera of the tesse car, you need to find the location of the cone in the view of the camera. We provided a skeleton code that subscribes to the proper messages for you, `scripts/cone_detector.py`. Your task is to find the center of the cone and publish that to the topic "/relative_cone" using the geometry message [PointStamped](http://docs.ros.org/en/kinetic/api/geometry_msgs/html/msg/PointStamped.html). The the PointStamped message is in three coordinates (XYZ), use X and Y to store the center of the cone and Z to store the height of the cone. You're the frame ID of your point should be same as the segmentation image.
 
-To simplify things for you, we provided launch file(launch/cone_parking.launch) within tesse_ros_bridge which drops the car near the cone at a reasonable angle and distance. We also provided the segmentation label, RGB color, of the cone which is defined at the top `scripts/cone_detector.py` class as `SEG_LABEL`.
+To simplify things for you, we provided launch file(launch/cone_parking.launch) within tesse_ros_bridge which drops the car near the cone at a reasonable angle and distance. We also provided the segmentation label, RGB color, of the cone which is defined at the top of `scripts/cone_detector.py` class as `SEG_LABEL`.
 
-When launching the tesse ros bridge for parking and cone find in tesse please run `roslaunch tesse_ros_bridge cone_parking.launch` instead of the normal launch file. For module 3 you will use the usually launch file.
+When launching the tesse ros bridge for parking and cone find in tesse please run `roslaunch tesse_ros_bridge cone_parking.launch` instead of the normal launch file. For module 3 you will use the usual launch file.
 
 
-**Step 2**: Implement a controller that drives the car towards the cone until you're desired distance away and at a desired angle. The desired distance is determined by the height of the cone in the view of the camera. We provided `scripts/parking_controller.py` which defines the desired height of the cone `DESIRED_HEIGHT` and `DESIRED_ANGLE`, We’ve subscribed to the “/relative_cone” topic for you, and have set up the publisher/callback as well.
+**Step 2**: Implement a controller that drives the car towards the cone until you're desired distance away and at a desired angle. The desired distance is determined by the height of the cone in the view of the camera. We provided `scripts/parking_controller.py` which defines the desired height of the cone `DESIRED_HEIGHT` and `DESIRED_ANGLE`. We’ve subscribed to the “/relative_cone” topic for you, and have set up the publisher/callback as well.
 
-Your job is to take the cone location message from **step 1**, and write a control policy that parks in front of the cone based of the height of the cone in the camera view and the offset from the center column of your camera view. Publish desired steering angles and velocity just like in lab2. **Note**: we have also set of the publisher with the proper topic and message.
+Your job is to take the cone location message from **step 1**, and write a control policy that parks in front of the cone based of the height of the cone in the camera view and the offset from the center column of your camera view. Publish desired steering angles and velocity just like in lab2. **Note**: we have also setup the publisher with the proper topic and message for you.
 
 This section only works with image coordinates, in the following sections you will learn and practice converting pixel space coordinates to 3D world coordinates using Homography Transformation.
 
