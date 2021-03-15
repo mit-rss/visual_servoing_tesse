@@ -125,7 +125,9 @@ By the way- you won’t get them all (probably). But 100% accuracy is not necess
 
 
 # Module 2: Parking in front of Cone in Tesse
-![](media/cone.png)
+  Segmentation      | Cone in mask
+--------------------|--------------------
+![](media/cone.png) | ![media/cone-threshold.png]
 
 In this section, you will detect a cone using the segmentation camera of the tesse simulator. You will then drive your car(tesse car) towards the cone, and finally park the car in front of the cone. This task takes three steps to complete:
 
