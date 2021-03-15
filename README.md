@@ -133,7 +133,7 @@ In this section, you will detect a cone using the segmentation camera of the tes
 
 This task takes three steps to complete:
 
-**step 1**: Using the algorithms(e.g. color segmentation) you have practiced in the first module of this lab and the segmentation camera of the tesse car, you need to find the location of the cone in the view of the camera. We provided a skeleton code that subscribes to the proper messages for you, `scripts/cone_detector.py`. Your task is to find the center of the cone and publish that to the topic "/relative_cone" using the geometry message [Point](http://docs.ros.org/en/jade/api/geometry_msgs/html/msg/Point.html).
+**step 1**: Using the algorithms(e.g. color segmentation) you have practiced in the first module of this lab and the segmentation camera of the tesse car, you need to find the location of the cone in the view of the camera. We provided a skeleton code that subscribes to the proper messages for you, `scripts/cone_detector.py`. Your task is to find the center of the cone and publish that to the topic "/relative_cone" using the geometry message [PointStamped](http://docs.ros.org/en/kinetic/api/geometry_msgs/html/msg/PointStamped.html). You're the frame ID of your point should be same as the segmentation image.
 
 To simplify things for you, we provided launch file(launch/cone_parking.launch) within tesse_ros_bridge which drops the car near the cone at a reasonable angle and distance. We also provided the segmentation label, RGB color, of the cone which is defined at the top `scripts/cone_detector.py` class as `SEG_LABEL`.
 
