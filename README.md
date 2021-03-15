@@ -222,49 +222,4 @@ We have provided you a node that uses the homography transformation to convert p
 Now you're ready to choose a lookahead distance on your line and use your parking controller to follow it.
 
 
-## Homography Transformation
-This section is just you give you a quck overview of what the homography matrix is and how to compute it. **Note**, there are no deliverable in this section. If you're curios, please keep reading.
-
-In this section you will use the camera to determine the position of a cone relative to the racecar. This module of the lab involves working on the car.
-### Launching the ZED Camera
-- On the car, use `roslaunch zed_wrapper zed.launch` to launch ZED
-- See lab 1 for instructions on how to export ROS_MASTER, then run `rqt_image_view` from your host computer
-The ZED publishes to a number of topics topics which you can learn about [here](https://docs.stereolabs.com/integrations/ros/getting-started/#displaying-zed-data). To view them, select the topic name through the dropdown menu. Do not use the depth image for this lab. The one you probably want to use is the default rectified camera: `/zed/rgb/image_rect_color`. If your ZED camera is not working, try running this script `~/zed/compiled_samples/ZED_Camera_Control`.
-
-### Accessing Image Data (TODO MODIFY)
-Write a ros subscriber for ZED camera topic.
-The ZED camera publishes message of type [Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html) from sensor_msgs.
-Learn about this message with the rosmsg command, `rosmsg show sensor_msgs/Image`.
-The image data is in ROS message data-structure which is not directly recognized by OpenCV, you might have also learned that OpenCV image representations are sometimes unique and bizarre(e.g. BGR instead of RGB). To convert between CV image data structures(mat) to ROS image representations(ROS Message structures) you may find [CV bridge](http://wiki.ros.org/cv_bridge/Tutorials/ConvertingBetweenROSImagesAndOpenCVImagesPython) helpful.
-**NOTE: The velodyne cameras are upside down (fix with imutils.rotate() or similar)**
-
-### Converting pixel coordinates to x-y coordinates (TODO MODIFY)
-If you recall from lecture, a camera is a sensor that converts 3D points (x,y,z) into 2D pixels (u,v). If we put on our linear algebra hats, we can take a peek at the projection of a 3D point to a 2D point:
-![](media/homography.jpg)
-
-In robotics, we are generally concerned with the inverse problem. Given a 2D (image) point, how can we extract a 3D (world) point?
-We need some tools and tricks to make that sort of calculation, as we lost (depth) information projecting down to our 2D pixel. Stereo cameras, for example, coordinate points seen from two cameras to add information and retrieve the X-Y-Z coordinates.
-In this lab, we will use another interesting fact about linear transformations for back out X-Y positions of pixels.
-
-### Coordinate space conversion
-The racecar can’t roll over or fly (no matter how cool it might look), so the ZED camera will always have a fixed placement with respect to the ground plane. By determining exactly what that placement is, we can compute a function that takes in image pixel coordinates (u, v) and returns the coordinates of the point on the floor (x, y) relative to the car that projects onto the pixel (u, v).
-
-This “function” is called a homography. Even though we can’t back out arbitrary 3D points from 2D pixels without lots of extra work, we can back out 2D world points if those points lie on a plane (and can therefore be thought of as 2D) that is fixed with respect to our camera.
-
-Check out this illustration of a camera and world plane. There exists a linear transformation between the camera projection and the world plane, since the world plane has two dimensions like an image plane.
-
-![](media/camera_diagram.jpg)
-### Find the Homography Matrix
-To find the homography matrix, you should first determine the pixel coordinates of several real world points. You should then measure the physical coordinates of these points on the 2D ground plane. If you gather enough of these point correspondences (at least 4), you have enough information to compute a homography matrix:
-
-#### Notes for finding the homography matrix:
-- The opencv findhomography implementation expects 3X1 data points in homogenous coordinates [X,Y,1].
-- You may need to rescale the homography output X',Y',Z' such that Z' = 1.
-
-![](media/homography2.jpg)
-
-Many existing packages including [OpenCV](https://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html#findhomography) can be used to compute homography matrices.
-
-`rqt_image_view` will be a useful debugging tool here. If you enable mouse clicking (there is a checkbox next to the topic name), then `rqt_image_view` will publish the pixel coordinates of points you click on in the image to a topic like this: `/zed/rgb/image_rect_color_mouse_left`. Publish a marker to RVIZ using this pixel, and you should be able to quickly tell if your homography matrix is doing its job.
-
 ### General Tips/FAQ:
