@@ -26,7 +26,7 @@ class ConeDetector():
         mask = cv.inRange(image_message, self.CONE_ID, self.CONE_ID)
         mask1 = cv.bitwise_and(image_message, image_message, mask=mask)
         gray = cv.cvtColor(mask1, cv.COLOR_BGR2GRAY)
-        contours, hierarchy=cv.findContours(gray, cv.RETR_TREE,cv.CHAIN_APPROX_SIMPLE)
+        result, contours, hierarchy=cv.findContours(gray, cv.RETR_TREE,cv.CHAIN_APPROX_SIMPLE)
 
         if not contours:
             bounding_box=((0,0),(0,0))
