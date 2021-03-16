@@ -34,10 +34,10 @@ class ParkingController():
 
         rospy.logerr(("relative cone cb!", self.relative_x, self.relative_y))
 
-        if msg.x_pos < .5:# or np.abs(msg.y_pos/msg.x_pos) > .3:
+        if msg.x_pos < self.parking_distance - 0.05:# or np.abs(msg.y_pos/msg.x_pos) > .3:
             drive_cmd.drive.speed = -1.0
             drive_cmd.drive.steering_angle = -1*angle_to_cone
-        elif msg.x_pos > .5 and msg.x_pos < self.parking_distance:
+        elif abs(msg.x_pos - self.parking_distance < 0.05):
             drive_cmd.drive.speed = 0
         else:
             drive_cmd.drive.speed = 1.0
