@@ -1,9 +1,10 @@
+# Lab 4: Vision In Tesse
 | Deliverable | Due Date              |
 |---------------|----------------------------------------------------------------------------|
 | Briefing (upload on github pages site)   | Wednesday, March 24th at 1:00PM EDT     |
 | [Team Member Assessment](https://docs.google.com/forms/d/e/1FAIpQLSc--nSO-ml92FV00CBpUzuo6Nk8dNRFLSzMrIfgBwc9WyEgjQ/viewform?usp=sf_link)  | Friday, March 26th at 11:59PM EDT |
 
-# Lab 4: Vision In Tesse
+## Introduction
 
 Welcome to Lab 4, where you will learn about color segmentation, some feature detection algorithms, and how to use the semantic segmentation camera in tesse to allow the racecar to park using a colored cone and follow lines!
 
@@ -191,9 +192,9 @@ Here is some information that will be useful in constructing the extrinsic camer
 
 
 # Module 3: Cone Detection and Parking In Tesse
-  Segmentation      | Cone in mask (TODO lisa REPLACE THESE IMAGES with real cone images)
---------------------|---------------------------
-![](media/cone.png) | ![](media/cone-threshold.png)
+Actual Cone (in green box)|  Segmentation      | Cone in mask 
+--------------------|--------------------|---------------------------
+![](media/big_cone_parking_spawn.png) |![](media/cone.png) | ![](media/masked_cone.png)
 
 In this section, you will detect a cone using the segmentation camera of the tesse simulator. You will then drive your car(tesse car) towards the cone, and finally park the car in front of the cone.
 
