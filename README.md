@@ -5,7 +5,7 @@
 
 # Lab 4: Vision In Tesse
 
-Welcome to Lab 4, where you will learn how to use the semantic segmentation camera in tesse to allow the racecar to park using a colored cone and follow lines!
+Welcome to Lab 4, where you will learn about color detection, some feature detection algorithms, and how to use the semantic segmentation camera in tesse to allow the racecar to park using a colored cone and follow lines!
 
 The semantic segmentation camera provides images that classify every object in the image by displaying them with a different color according to the object label. (You can see the camera images when you run `rqt_image_view` after your tesse-ros-bridge node and executable are up and running.)
 
@@ -18,22 +18,34 @@ We provide you with a csv file that maps these semantic class labels to the rgba
 In this lab, your team will do the following:
 * Experiment with object detection algorithms
 * Learn how to detect a road lane line in images
-* Learn how to transform a pixel from an image to a real world plane (given node to do this step)
+* Learn how to transform a pixel from an image to a real world plane
 * Develop a parking controller to park your robot in front of an orange cone
 * Extend your parking controller into a line following controller
 
 ### Lab Modules
-This lab has a lot in it, so we are encouraging parallelization by breaking up the components of the lab into <TODO> distinct modules, which you will combine together. Each module tackles an interesting problem in computer vision/controls.  
+This lab has a lot in it, so we are encouraging parallelization by breaking up the components of the lab into 4 distinct modules, which you will combine together. Each module tackles an interesting problem in computer vision/controls.  
 - Module 1: Cone Detection via Color Segmentation
-- Module 2: Parking in front of a cone in Tesse
-- Module 3: Line Detection via Hough Transforms
+- Module 2: Homography Transformation of images to the world plane
+- Module 3: Parking in front of a cone in Tesse
+- Module 4: Line Detection via Hough Transforms
 
-Here’s how they fit together.
+Here's how they fit together:
+In Module 1, you will learn a basic color detection algorithm to find objects in images and get familiar with some opencv funtions to identify a cone in images. 
+
+In Module 2 you will learn how to transform a pixel coordinate to the frame of reference of the robot in the world! 
+
+Now that you know how to find a cone in images and transform that coordinate to the real world, Module 3 involves developing a parking controller to navigate the tesse car to park in front of an orange cone in simulation. 
+
+Finally, you're going to learn one additional feature detection algorithm in Module 4 for extracting lines from images and use your knowledge of homography and the same parking controller to follow a dashed lane line in simulation. You can see how each module builds on top of the previous one.  
 
 ### Bringing it together:
-The first module of this lab asks you to find an orange cone in images. Here you will learn/practice some computer vision algorithms that will help you locate the cone. The second module asks you to reuse your algorithms from module 1 to find a cone in the tesse simulated environment and then use a transformation to convert the pixel space location of the cone to 3D world space. You will then develop a controller to help you park the car in front of the cone.
+It's time to make your robot park in front of a cone.
+Suggested steps:
 
-In the third module, you will be able to extend your image detection and parking controller from module 1 & 2, to follow a dashed line in tesse. You can see how each module builds on top of the previous one.  
+1. Write a ros node using Module 2 that publishes the relative location of a cone in view of the segmentation camera. Make sure you can see the cone in rviz before trying to do control. You should now be able to teleop your car around and accurately determine its position relative to the car using just the camera. Make sure to publish a Marker to RVIZ representing the cone. The rviz cone should appear where the real cone does.
+2. To write the parking controller to navigate to and stop in front of the cone, listen to the relative cone position, and publish drive commands. Congratulations are in order when you can park successfully.
+3. In Module 4 detect the dashed lane line by first using hough transforms to extract the lines from the image and average them to your main lane line you wish to follow. It's helpful to view the masked images using opencv functions to debug. Once you have this line, publish to a lane line message so your homography node can subscribe to it and publish the relative location on the line a certain lookahead distance away from the car.
+4. Modify your parking controller to listen to your new "relative cone" and follow the line.
 
 ### Computer Setup
 For this lab, you will need Opencv3. The virtual machines already have it, but it likely needs to be updated to 3.4 and are missing the opencv-contrib package (this is where some propietary algorithms were moved to in opencv3). If you are running linux natively, depending on what you've done before you may or may not have the correct setup. Try running these commands as well, and the correct packages will install as needed.
@@ -50,7 +62,9 @@ Steps:
 
 You will also need tesse set up. Refer to instructions in [TESSE setup handout](https://github.com/mit-rss/tesse_install) if you need a reminder.
 
-Lastly, download the most up to date executable for this lab [here](https://drive.google.com/drive/u/1/folders/18dQDeseaLYEjFnNGEQhOgWi1wMHtVmdu)
+Make sure you checkout the `visual_servoing_tesse` branch of `tesse-ros-bridge` [here](https://github.mit.edu/rss/tesse-ros-bridge/tree/visual_servoing_tesse)! Spawn points will not work for this lab otherwise. 
+
+Lastly, download the new most up to date executable for this lab! [here](https://drive.google.com/drive/u/1/folders/18dQDeseaLYEjFnNGEQhOgWi1wMHtVmdu)
 
 ### Analysis:
 We are also looking for a bit more in terms of experimental analysis in the lab than we have in the past. We are, in particular, looking for analysis of your vision algorithm and the controller.
@@ -62,25 +76,35 @@ We wrote some code to test the Intersection over Union (IOU) scores of your visi
 
 To test your algorithm against the cone dataset. Results will be outputted to a .csv file in **scores/**. Some images will not yield good results. This is expected, and we would like to know why the algorithm works/doesn't work for certain images in your writeup.
 
-Controller analysis: (TODO MODIFY)
-When you wrote the parking controller (module <INSERT HERE>), you published error messages. Now it’s time to use **rqt_plot** to generate some plots. Try running the following experiments:
-- Put a cone directly in front of the car, ~3-5 meters away. Your car should drive straight forward and stop in front of the cone. Show us plots of x-error and total-error over time, and be prepared to discuss.
-- Run the car on one of our tracks, and check out the plots for any interesting error signals. Compare plots at different speeds, and see how error signals change with speed.
-### Grading: /10 (TODO MODIFY)
-Technical implementation
-- 1/2 points for satisfactory completion of module 1
-- 1/2 points for satisfactory completion of module 2
-- 1/2 points for satisfactory completion of module 3
-- 1/2 points for satisfactory completion of module 4
+Controller analysis:
+
+When you write the parking controller in Module 3, you will be publishing error messages. Now it’s time to use **rqt_plot** to generate some plots. Try running the following experiments:
+- Drive your car around in tesse (after launching the cone detector node) so the segmentation camera faces the cone from different locations and angles, then launch your parking controller. Your car should drive straight to the cone and stop in front of the cone. Show us plots of x-error and total-error over time, and be prepared to discuss.
+- Compare plots at different speeds, and see how error signals change with speed.
+
+Be able to explain why this controller works for line following as well, and demonstrate the working algorithm and what changes you had to make.
 
 
-Evaluation (include in presentation): (TODO MODIFY)
-- 1 point for explaining vision algorithm used/implemented. Why does each algorithm perform as it does on each module?
-- 1 point for explaining the homography transformation. How do we convert pixels to plane coordinates?
-- 2 point for demonstrating and explaining performance controllers. Make sure you mention your method for tuning the controller gains for both parking and line-following. Hint: include error plots from **rqt_plot**
-- 1 point for demonstrating and explaining hough-transformations to extract the line from the dashed road line-dividers. 
+### Submission and Grading
+Lab 4 will require a briefing, but no report. You will deliver an 8-minute briefing presentation (plus 3 minutes Q&A) together with your team, upload the briefing slides to your github pages website, and submit a [team member assessment form](https://docs.google.com/forms/d/e/1FAIpQLSc--nSO-ml92FV00CBpUzuo6Nk8dNRFLSzMrIfgBwc9WyEgjQ/viewform?usp=sf_link). See the deliverables chart at the top of this page for due dates and times.
 
-# Nodes
+You can view the rubric for the [briefing](https://docs.google.com/document/d/1NmqQP7n1omI9bIshF1Y-MP70gfDkgEeoMjpWv8hjfsY/edit) for more details on specific grading criteria. You will receive a grade out of 10 points. Your final lab grade will also be out of 10 points, based on the following weights:
+
+| Deliverable Grade | Weighting              |
+|---------------|----------------------------------------------------------------------------|
+| briefing grade (out of 10)  | 80% |
+| satisfactory completion of Module 1 | 5% |
+| satisfactory completion of Module 2 | 5% |
+| satisfactory completion of Module 3 | 5% |
+| satisfactory completion of Module 4 | 5% |
+
+The elements you should include in your Lab 4 presentation include:
+- Explaining vision algorithm used/implemented. Why does each algorithm perform as it does on each module?
+- Explaining the homography transformation. How do we convert pixels to plane coordinates?
+- Demonstrating and explaining performance controllers. Make sure you mention your method for tuning the controller gains for both parking and line-following. Hint: include error plots from **rqt_plot**
+- Demonstrating and explaining hough-transformations to extract the line from the dashed road line-dividers. 
+
+# Nodes and Topics (TODO MODIFY)
 
 Lane Following Vision Node:
  - Subscribes: /tesse/segmentation: image message
@@ -158,26 +182,28 @@ We have provided you with an (almost-complete) `HomographyConverter` node. This 
 
 
 # Module 3: Parking in front of Cone in Tesse
-  Segmentation      | Cone in mask
+  Segmentation      | Cone in mask (TODO REPLACE THESE IMAGES)
 --------------------|---------------------------
 ![](media/cone.png) | ![](media/cone-threshold.png)
 
 In this section, you will detect a cone using the segmentation camera of the tesse simulator. You will then drive your car(tesse car) towards the cone, and finally park the car in front of the cone.
 
-This task takes two steps to complete:
+**step 1**: Using the algorithms you have practiced in the Module 1 of this lab and the segmentation camera of the tesse car, you need to find the location of the cone in the view of the camera. 
 
-**step 1**: Using the algorithms(e.g. color segmentation) you have practiced in the first module of this lab and the segmentation camera of the tesse car, you need to find the location of the cone in the view of the camera. We provided a skeleton code that subscribes to the proper messages for you, `scripts/cone_detector.py`. Your task is to find the center of the cone and publish that to the topic "/relative_cone" using the geometry message [PointStamped](http://docs.ros.org/en/kinetic/api/geometry_msgs/html/msg/PointStamped.html). The the PointStamped message is in three coordinates (XYZ), use X and Y to store the center of the cone and Z to store the height of the cone. You're the frame ID of your point should be same as the segmentation image.
+We provided a skeleton code that subscribes to the proper messages for you, `src/cone_detector.py`. Your task is to find the center of the cone in image coordinates and publish that to the topic `/relative_cone_px` using the geometry message [PointStamped](http://docs.ros.org/en/kinetic/api/geometry_msgs/html/msg/PointStamped.html). The PointStamped message has three coordinates (XYZ), use X and Y to store the center of the cone. Make sure the frame ID of your point is the same as the segmentation image. You should the publish this point via the topic `/relative_cone_px`, and your homography node should transform your point to the topic `/relative_cone`.
 
-To simplify things for you, we provided launch file(launch/cone_parking.launch) within tesse_ros_bridge which drops the car near the cone at a reasonable angle and distance. We also provided the segmentation label, RGB color, of the cone which is defined at the top of `scripts/cone_detector.py` class as `SEG_LABEL`.
-
-When launching the tesse ros bridge for parking and cone find in tesse please run `roslaunch tesse_ros_bridge cone_parking.launch` instead of the normal launch file. For module 3 you will use the usual launch file.
+Look at the skeleton launch file `launch/cone_detector.launch` to see how to make the car spawn and launch your cone detector node. Use the argument `big_cone_parking` for `/track` to spawn at a reasonable distance and angle away from the cone. We also provided the segmentation label and RGB color of the cone which is defined at the top of `src/cone_detector.py`.
 
 
-**Step 2**: Implement a controller that drives the car towards the cone until you're desired distance away and at a desired angle. The desired distance is determined by the height of the cone in the view of the camera. We provided `scripts/parking_controller.py` which defines the desired height of the cone `DESIRED_HEIGHT` and `DESIRED_ANGLE`. We’ve subscribed to the “/relative_cone” topic for you, and have set up the publisher/callback as well.
+**Step 2**: 
+Implement a controller that drives the tesse car towards the cone until you're desired distance away and at a desired angle. 
+The robot will start with the cone in the field of view of the camera and should drive directly to the cone and park in front of it (1.5 - 2 feet from the front). Parking means facing the cone at the correct distance, not just stopping at the correct distance. See an example video of what we mean on the physical cars [here](https://gfycat.com/obesevioleticelandicsheepdog).
 
-Your job is to take the cone location message from **step 1**, and write a control policy that parks in front of the cone based of the height of the cone in the camera view and the offset from the center column of your camera view. Publish desired steering angles and velocity just like in lab2. **Note**: we have also setup the publisher with the proper topic and message for you.
+[todo lisa insert image]
 
-This section only works with image coordinates, in the following sections you will learn and practice converting pixel space coordinates to 3D world coordinates using Homography Transformation.
+The distance and angle don’t act independently so consider carefully how you should make them work together.
+
+Your parking controller should subscribe from `/relative_cone` to get the coordinates of the cone with respect to the base_link_gt (car) frame. You can `rostopic echo /relative_cone` to verify these coordinates make sense from the homography node.
 
 We aren’t aiming to give you a specific algorithm to run your controller, and we encourage you to play around. Try answering these questions:
 - What should the robot do if the cone is far in front?
@@ -185,9 +211,20 @@ We aren’t aiming to give you a specific algorithm to run your controller, and 
 - What if the robot isn’t too close or far, but the cone isn’t directly in front of the robot?
 - How can we keep the cone in frame when we are using our real camera?
 
+**Step 3**:
+The last thing for you to do is publish the x_error, y_error, and distance (sqrt(x**2 + y**2)) error. Fire up a terminal and type in: rqt_plot. A gui should emerge, which gives you the ability to view a live plot of (numerical) ros messages.
+
+[todo lisa insert image]
+
+These plots are super useful in controller tuning/debugging (and any other time you need to plot some quantity over time). Tips:
+
+- Type in the topic you want to graph in the top left of the gui.
+- Adjust the axes with the icon that looks like a green checkmark (top left menu bar).
+- 
+You will be using these plots to demonstrate controller performance for your presentation.
 
 # Module 4: Line Follower
-After you and your team put your modules together to park in front of a cone, a modification of your code will create a controller for a line follower. Like a donkey chasing a carrot, if you restrict the view of your robot to what is a little ahead of it you will follow a colored line.
+After you and your team put your modules together to park in front of a cone, a modification of your controller will allow you to create a line follower. Like a donkey chasing a carrot, if you restrict the view of your robot to what is a little ahead of it you will follow a colored line.
 
 This works by setting a lookahead distance. See an example [here](https://gfycat.com/SeveralQueasyAmberpenshell).
 
@@ -204,7 +241,7 @@ Here is the view from the semantic segmentation, and as you can see the lane mar
 
 Sometimes the lanes are double lines and sometimes they are dashed, so first we're going to write a node that extracts a single approximated line from our images in slope-intercept form (y = mx + b).
 
-First you'll want to find the semantic label and color that identify the lane marker. The semantic label associated with our lane marker is in `params_tesse.yaml`. You can then extract the rgba value associated with that semantic label from `tesse_windridge_city_scene_segmentation_mapping.csv`.
+The first step is to extract the semantic label and color that identify the lane marker. The semantic label associated with our lane marker is in `params_tesse.yaml`. You can then extract the rgba value associated with that semantic label from `tesse_windridge_city_scene_segmentation_mapping.csv`. You can see in the skeleton `src/line_finder.py` a helper function for how we extract the color of the lane marker from the parameters and csv.
 
 Then you'll want to apply a mask over your image just like in cone detection to keep just the lane markers. What else can you mask out? (hint: There probably won't be any lanes in the sky.) Dilation is a good way to exagerate the road lines (relevant for the dashed ones) so they don't dissapear in the next line finding step!
 
@@ -217,11 +254,14 @@ The averaged line should be like the red line below:
 
 <img src="media/hough-line-average.png" width="400">
 
-Once you have the m and b of this averaged line, publish your line parameters to the `lane_line_topic` specified in `params_tesse.yaml` using the provided `LaneLine.msg` type.
+Once you have the m and b of this averaged line, publish your line parameters to the `lane_line_topic` specified in `params_tesse.yaml` using the provided `LaneLine.msg` type. Again, you can see all the correct topics in the skeleton file `src/line_finder.py`.
 
-We have provided you a node that uses the homography transformation to convert pixels to plane coordinates, and therefore enable you to project a point on your line in from the image plane to the ground with respect to your robot!
+The homography node will subscribe from this `lane_line_topic` and transform a point on your line in from the image plane to the ground with respect to your robot!
 
 Now you're ready to choose a lookahead distance on your line and use your parking controller to follow it.
 
 
 ### General Tips/FAQ:
+
+Segmentation Camera:
+We provide you with a ground truth semantic segmentation image from simulation to complete your tasks in tesse. In the real world, you don't have these ground truth semantic labels and semantic segmentations, and you'll have to use more complex feature extraction methods. However, a lot of the techniques we learned in this lab are incorporated in algorithms for real life autonomous driving. Modifications to your line detection algortihm can detect lanes in real rgb images. See an example here: https://www.youtube.com/watch?v=lWhunNd0q3Q&ab_channel=GalenBallew.
