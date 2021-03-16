@@ -156,7 +156,7 @@ We need some tools and tricks to make that sort of calculation, as we lost (dept
 In this lab, we will use another interesting fact about linear transformations to back out the X-Y positions of objects on the ground from the pixels they appear in. 
 
 ### Coordinate space conversion
-The racecar can’t roll over or fly (no matter how cool it might look), so the ZED camera will always have a fixed placement with respect to the ground plane. By determining exactly what that placement is, we can compute a function that takes in image pixel coordinates (u, v) and returns the coordinates of the point on the floor (x, y, 0) relative to the car that projects onto the pixel (u, v).
+The racecar can’t roll over or fly (no matter how cool it might look), so the ZED camera will always have a fixed placement with respect to the ground plane. By determining exactly what that placement is, we can compute a function that takes in image pixel coordinates (u, v) and returns the coordinates of the point on the floor (x, y, 0) relative to the car that projects onto said pixel.
 
 This “function” is called a homography. Even though we can’t back out arbitrary 3D points from 2D pixels without lots of extra work, we can back out 2D world points if those points lie on a plane (and can therefore be thought of as 2D) that is fixed with respect to our camera.
 
