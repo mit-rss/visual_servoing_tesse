@@ -1,6 +1,6 @@
 | Deliverable | Due Date              |
 |---------------|----------------------------------------------------------------------------|
-| Briefing   | Wednesday, March 24th at 1:00PM EDT     |
+| Briefing (upload on github pages site)   | Wednesday, March 24th at 1:00PM EDT     |
 | [Team Member Assessment](https://docs.google.com/forms/d/e/1FAIpQLSc--nSO-ml92FV00CBpUzuo6Nk8dNRFLSzMrIfgBwc9WyEgjQ/viewform?usp=sf_link)  | Friday, March 26th at 11:59PM EDT |
 
 # Lab 4: Vision In Tesse
@@ -104,24 +104,26 @@ The elements you should include in your Lab 4 presentation include:
 - Demonstrating and explaining performance controllers. Make sure you mention your method for tuning the controller gains for both parking and line-following. Hint: include error plots from **rqt_plot**
 - Demonstrating and explaining hough-transformations to extract the line from the dashed road line-dividers. 
 
-# Nodes and Topics (TODO MODIFY)
+# Nodes and Topics
 
-Lane Following Vision Node:
- - Subscribes: /tesse/segmentation: image message
- - Publishes: /lane_line_px: line message
+Line Finder Vision Node:
+ - Subscribes: `/tesse/seg_cam/rgb/image_raw` [Image](https://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/Image.html)
+ - Publishes: `/lane_line` [LaneLine](https://github.com/mit-rss/visual_servoing_tesse/blob/main/msg/LaneLine.msg)
 
 Cone Parking Vision Node:
- - Subscribes: /tesse/segmentation: image message
- - Publishes: /relative_cone_px: pose message (pixel coordinates)
+ - Subscribes: `/tesse/seg_cam/rgb/image_raw`[Image](https://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/Image.html)
+ - Publishes: `/relative_cone_px`[PointStamped](http://docs.ros.org/en/kinetic/api/geometry_msgs/html/msg/PointStamped.html)
 
 Homography Node:
- - Subscribes: /relative_cone_px: pose message
- - Publishes: /relative_cone: pose message
-Parking Controller Node:
-- Subscribes: /relative_cone: Pose in pixel space
-- Publishes drive Commands: Drive commands AckermannDriveStamped
-Line Follower Controller Node:
-- Subscribes: /relative_cone: pose message
+ - Subscribes: `/relative_cone_px` [PointStamped](http://docs.ros.org/en/kinetic/api/geometry_msgs/html/msg/PointStamped.html)
+ - Subscribes: `/lane_line` [LaneLine] (https://github.com/mit-rss/visual_servoing_tesse/blob/main/msg/LaneLine.msg)
+ - Publishes: `/relative_cone` [cone_location](https://github.com/mit-rss/visual_servoing_tesse/blob/main/msg/cone_location.msg)
+ - Publishes: any rviz markers for the cone :)
+
+Parking/Line Follower Controller Node:
+- Subscribes: `/relative_cone`
+- Publishes: `/tesse/drive` [AckermannDriveStamped](http://docs.ros.org/en/melodic/api/ackermann_msgs/html/msg/AckermannDriveStamped.html)
+- Publishes: `/parking_error`[parking_error](https://github.com/mit-rss/visual_servoing_tesse/blob/main/msg/parking_error.msg)
 
 # Module 1: Cone Detection Via Color Segmentation
 In lecture we learned lots of different ways to detect objects. Sometimes it pays to train a fancy neural net to do the job. Sometimes we are willing to wait and let SIFT find it. Template matching is cool too.
@@ -199,7 +201,7 @@ Look at the skeleton launch file `launch/cone_detector.launch` to see how to mak
 Implement a controller that drives the tesse car towards the cone until you're desired distance away and at a desired angle. 
 The robot will start with the cone in the field of view of the camera and should drive directly to the cone and park in front of it (1.5 - 2 feet from the front). Parking means facing the cone at the correct distance, not just stopping at the correct distance. See an example video of what we mean on the physical cars [here](https://gfycat.com/obesevioleticelandicsheepdog).
 
-[todo lisa insert image]
+![](media/parking_controller_diagram.jpg)
 
 The distance and angle don’t act independently so consider carefully how you should make them work together.
 
@@ -214,7 +216,7 @@ We aren’t aiming to give you a specific algorithm to run your controller, and 
 **Step 3**:
 The last thing for you to do is publish the x_error, y_error, and distance (sqrt(x**2 + y**2)) error. Fire up a terminal and type in: rqt_plot. A gui should emerge, which gives you the ability to view a live plot of (numerical) ros messages.
 
-[todo lisa insert image]
+![](media/rqt_plot_crop.jpg)
 
 These plots are super useful in controller tuning/debugging (and any other time you need to plot some quantity over time). Tips:
 
@@ -228,16 +230,18 @@ After you and your team put your modules together to park in front of a cone, a 
 
 This works by setting a lookahead distance. See an example [here](https://gfycat.com/SeveralQueasyAmberpenshell).
 
-![](media/orange_circle.jpg)
-![](media/blacked_out_circle.jpg)
+  Original      | Cropped
+--------------------|---------------------------
+![](media/orange_circle.jpg) | ![](media/blacked_out_circle.jpg)
 
 We're going to be doing a realistic line follower on the road in simulation! You are going to be following the center line of the road.
 
-![](media/tesse-road.png)
-
 Here is the view from the semantic segmentation, and as you can see the lane markers are dark blue here:
 
-![](media/tesse-road-seg-cam.png)
+  Original      | Segmentation Camera
+--------------------|---------------------------
+![](media/tesse-road.png) | ![](media/tesse-road-seg-cam.png)
+
 
 Sometimes the lanes are double lines and sometimes they are dashed, so first we're going to write a node that extracts a single approximated line from our images in slope-intercept form (y = mx + b).
 
