@@ -18,7 +18,7 @@ class ParkingController():
         self.error_pub = rospy.Publisher("/parking_error",
             parking_error, queue_size=10)
 
-        self.parking_distance = .1 #meters
+        self.parking_distance = 10 #meters
         self.relative_x = 0
         self.relative_y = 0
 

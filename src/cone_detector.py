@@ -8,8 +8,10 @@ from geometry_msgs.msg import PointStamped
 from cv_bridge import CvBridge
 
 class ConeDetector():
-    LOW_THRESHOLD = np.asarray([125, 175,137])
-    HIGH_THRESHOLD = np.asarray([135, 185,147])
+    #LOW_THRESHOLD = np.asarray([125, 175,137])
+    #HIGH_THRESHOLD = np.asarray([135, 185,147])
+
+    CONE_ID = np.asarray([194,253,94])
     SUB_TOPIC = "tesse/seg_cam/rgb/image_raw"
     SEG_IMAGE = "/threshold_msgs"
     RELATIVE_CONE="/relative_cone_px"
@@ -21,7 +23,7 @@ class ConeDetector():
     def image_callback(self, msg):
         image_message = self.BRIDGE.imgmsg_to_cv2(msg)
 
-        mask = cv.inRange(image_message, self.LOW_THRESHOLD, self.HIGH_THRESHOLD)
+        mask = cv.inRange(image_message, self.CONE_ID, self.CONE_ID)
         mask1 = cv.bitwise_and(image_message, image_message, mask=mask)
         gray = cv.cvtColor(mask1, cv.COLOR_BGR2GRAY)
         contours, hierarchy=cv.findContours(gray, cv.RETR_TREE,cv.CHAIN_APPROX_SIMPLE)
