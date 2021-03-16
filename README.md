@@ -1,9 +1,11 @@
+# Lab 4: Vision In Tesse
 | Deliverable | Due Date              |
 |---------------|----------------------------------------------------------------------------|
 | Briefing (upload on github pages site)   | Wednesday, March 24th at 1:00PM EDT     |
 | [Team Member Assessment](https://docs.google.com/forms/d/e/1FAIpQLSc--nSO-ml92FV00CBpUzuo6Nk8dNRFLSzMrIfgBwc9WyEgjQ/viewform?usp=sf_link)  | Friday, March 26th at 11:59PM EDT |
 
-# Lab 4: Vision In Tesse
+
+## Introduction
 
 Welcome to Lab 4, where you will learn about color detection, some feature detection algorithms, and how to use the semantic segmentation camera in tesse to allow the racecar to park using a colored cone and follow lines!
 
