@@ -37,10 +37,11 @@ You can view the rubric for the [briefing](https://docs.google.com/document/d/1N
 | satisfactory completion of Module 4 | 5% |
 
 The elements you should include in your Lab 4 presentation include:
-- Explaining vision algorithm used/implemented. Why does each algorithm perform as it does on each module?
+- Explaining your IOU scores achieved to analyze the performance of color segmentation in module 1
 - Explaining the homography transformation. How do we convert pixels to plane coordinates?
-- Demonstrating and explaining performance controllers. Make sure you mention your method for tuning the controller gains for both parking and line-following. Hint: include error plots from **rqt_plot**
-- Demonstrating and explaining hough-transformations to extract the line from the dashed road line-dividers. 
+- Explaining vision algorithm used/implemented for cone detection, and demo a working parking controller.
+- Explaining vision algorithm used/implemented for line detection, and demo a working line follower.
+- Demonstrating and explaining the performance of your controllers. Make sure you mention your method for tuning the controller gains for both parking and line-following. Hint: include error plots from **rqt_plot**
 
 ### Lab Modules
 This lab has a lot in it, so we are encouraging parallelization by breaking up the components of the lab into 4 distinct modules, which you will combine together. Each module tackles an interesting problem in computer vision/controls.  
@@ -223,7 +224,7 @@ We aren’t aiming to give you a specific algorithm to run your controller, and 
 **Step 3**:
 The last thing for you to do is publish the x_error, y_error, and distance (sqrt(x**2 + y**2)) error. Fire up a terminal and type in: rqt_plot. A gui should emerge, which gives you the ability to view a live plot of (numerical) ros messages.
 
-![](media/rqt_plot_crop.jpg)
+![](media/rqt_plot_crop_labeled.png)
 
 These plots are super useful in controller tuning/debugging (and any other time you need to plot some quantity over time). Tips:
 
