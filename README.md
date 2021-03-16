@@ -164,7 +164,7 @@ Check out this illustration of a camera and world plane. There exists a linear t
 
 ![](media/camera_diagram.jpg)
 ### The Homography Matrix
-To find the homography matrix, we choose at least four points on the 2D ground plane, and find which pixels they occupy in the camera image. A pairing of real-world point and its camera pixel is known as a point correspondence. If you gather enough of these point correspondences (at least 4), you have enough information to compute a homography matrix:
+To find the homography matrix, we choose at least four points on the 2D ground plane, and find which pixels they occupy in the camera image. A pairing of real-world point and its camera pixel is known as a point correspondence. If you gather enough of these point correspondences (at least 4), you have enough information to compute a homography matrix. The homography matrix looks like this:
 
 ![](media/homography2.jpg)
 
