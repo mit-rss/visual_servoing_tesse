@@ -5,7 +5,7 @@
 
 # Lab 4: Vision In Tesse
 
-Welcome to Lab 4, where you will learn about color detection, some feature detection algorithms, and how to use the semantic segmentation camera in tesse to allow the racecar to park using a colored cone and follow lines!
+Welcome to Lab 4, where you will learn about color segmentation, some feature detection algorithms, and how to use the semantic segmentation camera in tesse to allow the racecar to park using a colored cone and follow lines!
 
 The semantic segmentation camera provides images that classify every object in the image by displaying them with a different color according to the object label. (You can see the camera images when you run `rqt_image_view` after your tesse-ros-bridge node and executable are up and running.)
 
@@ -49,7 +49,7 @@ This lab has a lot in it, so we are encouraging parallelization by breaking up t
 - Module 4: Line Detection via Hough Transforms
 
 Here's how they fit together:
-In Module 1, you will learn a basic color detection algorithm to find objects in images and get familiar with some opencv funtions to identify a cone in images. 
+In Module 1, you will learn a basic color segmentation algorithm to find objects in images and get familiar with some opencv funtions to identify a cone in images. 
 
 In Module 2 you will learn how to transform a pixel coordinate to the frame of reference of the robot in the world! 
 
