@@ -187,7 +187,7 @@ Your task is to help the the `HomographyConverter` project some points from the 
 Here is some information that will be useful in constructing the extrinsic camera matrix:
 - In the robot frame, the z-axis points up, the x-axis points forward, and the y-axis points to the left.
 - The orientation of the xy- image plane is illustrated in the Module 1 section. We consider the z-axis of the image coordinate frame to point forward from the robot.
-- The segmentation camera in tesse is mounted 0.05m to the right and 1.50m to the front of the robot body center. It is elevated 1.03 meters above the ground. (You can find these parameters yourself for all TESSE cameras in `tesse-ros-bridge/ROS/params/camera_params.yaml`.)
+- The segmentation camera in tesse is mounted 0.05m to the left and 1.50m to the front of the robot body center. It is elevated 1.03 meters above the ground. (You can find these parameters yourself for all TESSE cameras in `tesse-ros-bridge/ROS/params/camera_params.yaml`.)
 
 
 # Module 3: Cone Detection and Parking In Tesse
