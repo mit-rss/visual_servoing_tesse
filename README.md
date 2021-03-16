@@ -249,7 +249,7 @@ The averaged line should be like the red line below.
 --------------------|---------------------------
 ![](media/hough-lines-many.png) | ![](media/hough-line-average.png)
 
-Once you have the m and b of this averaged line, publish your line message to the `lane_line_topic` specified in `params_tesse.yaml` using the provided `LaneLine.msg` type. Again, you can see all the correct topics in the skeleton file `src/line_finder.py`.
+Once you have the m and b of this averaged line, publish your line message to the `lane_line_topic` specified in `params_tesse.yaml` using the provided `LaneLine.msg` type. Again, you can see all the correct topics and spawn points in the skeleton files `src/line_finder.py` and `launch/line_finder.launch`.
 
 The homography node will subscribe from this `lane_line_topic` and transform a point on your line in from the image plane to the ground with respect to your robot!
 
