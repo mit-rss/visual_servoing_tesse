@@ -257,13 +257,11 @@ The averaged line should be like the red line below.
 
 Once you have the m and b of this averaged line, publish your line message to the `lane_line_topic` specified in `params_tesse.yaml` using the provided `LaneLine.msg` type. Again, you can see all the correct topics in the skeleton file `src/line_finder.py`.
 
-The homography node will subscribe from this `lane_line_topic` and transform a point on your line in from the image plane to the ground with respect to your robot!
+The homography node will subscribe from this `lane_line_topic` and transform a point on your line in from the image plane to the ground with respect to your robot! Now, you're ready to follow a line through a small modification to your working parking controller.
 
-Now you're ready to choose a lookahead distance on your line and use your parking controller to follow it.
+To follow a line, your code can publish a spoofed "cone" target at a fixed lookahead distance (greater than the desired parking distance). This target point should always lie on the lane you're trying to follow. Like a donkey chasing a carrot, if you restrict the view of your robot to a line segment some fixed distance ahead, you will continouously follow this line.
 
-After you and your team put your modules together to park in front of a cone, a modification of your controller will allow you to create a line follower. To get intuition for why this works, like a donkey chasing a carrot, if you restrict the view of your robot to what is a little ahead of it you will follow a colored line.
-
-This works by setting a lookahead distance. See an example [here](https://gfycat.com/SeveralQueasyAmberpenshell).
+See an example of following a line by chasing a lookahead point [here](https://gfycat.com/SeveralQueasyAmberpenshell).
 
   Original      | Cropped
 --------------------|---------------------------
