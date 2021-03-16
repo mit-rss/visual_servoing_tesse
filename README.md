@@ -74,7 +74,7 @@ You will also need tesse set up. Refer to instructions in [TESSE setup handout](
 
 Make sure you checkout the `visual_servoing_tesse` branch of `tesse-ros-bridge` [here](https://github.mit.edu/rss/tesse-ros-bridge/tree/visual_servoing_tesse)! Spawn points will not work for this lab otherwise. 
 
-Lastly, download the new most up to date executable for lab 4 [here]!(https://drive.google.com/drive/u/1/folders/18dQDeseaLYEjFnNGEQhOgWi1wMHtVmdu)
+Lastly, download the new most up to date executable for lab 4 [here](https://drive.google.com/drive/u/1/folders/18dQDeseaLYEjFnNGEQhOgWi1wMHtVmdu)
 **remember to update your IP addresses after you pull tesse-ros-bridge**
 
 Look at the tesse_install [handout](https://github.com/mit-rss/tesse_install) for a refresher on how to launch tesse if you need it. 99% of networking issues will be resolved if you follow the steps in the handout, so please refer to it :).
