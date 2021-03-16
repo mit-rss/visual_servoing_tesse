@@ -91,7 +91,7 @@ class HomographyConverter():
         ## finally, compute the homography matrix to backproject from image
         ## plane to ground plane
 
-        self.homography_matrix, err = cv2.findHomography(np.float32(PTS_IMAGE_PLANE[:, [0, 1]]), np.float32(PTS_GROUND_PLANE[:, [0, 2]]))
+        # self.homography_matrix, err = cv2.findHomography( ??? YOUR ARGUMENTS HERE )
 
         #############################################################################
 

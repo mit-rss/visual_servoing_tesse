@@ -152,10 +152,10 @@ If you recall from lecture, a camera is a sensor that converts 3D points (x,y,z)
 
 In robotics, we are generally concerned with the inverse problem. Given a 2D (image) point, how can we extract a 3D (world) point?
 We need some tools and tricks to make that sort of calculation, as we lost (depth) information projecting down to our 2D pixel. Stereo cameras, for example, coordinate points seen from two cameras to add information and retrieve the X-Y-Z coordinates.
-In this lab, we will use another interesting fact about linear transformations for back out X-Y positions of pixels.
+In this lab, we will use another interesting fact about linear transformations for back out X-Z positions of pixels. (In TESSE, the Y-axis is vertical.)
 
 ### Coordinate space conversion
-The racecar can’t roll over or fly (no matter how cool it might look), so the ZED camera will always have a fixed placement with respect to the ground plane. By determining exactly what that placement is, we can compute a function that takes in image pixel coordinates (u, v) and returns the coordinates of the point on the floor (x, y) relative to the car that projects onto the pixel (u, v).
+The racecar can’t roll over or fly (no matter how cool it might look), so the ZED camera will always have a fixed placement with respect to the ground plane. By determining exactly what that placement is, we can compute a function that takes in image pixel coordinates (u, v) and returns the coordinates of the point on the floor (x, 0, z) relative to the car that projects onto the pixel (u, v).
 
 This “function” is called a homography. Even though we can’t back out arbitrary 3D points from 2D pixels without lots of extra work, we can back out 2D world points if those points lie on a plane (and can therefore be thought of as 2D) that is fixed with respect to our camera.
 
@@ -171,13 +171,13 @@ To find the homography matrix, we choose at least four points on the 2D ground p
 
 Many existing packages including [OpenCV](https://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html#findhomography) can be used to compute homography matrices from point correspondences. 
 
-We have provided you with an (almost-complete) `HomographyConverter` node! This node subscribes to the `/relative_cone_px` and `/lane_line` topics, which are defined in pixel (u, v) coordinates, and publishes a corresponding target point in relative ground-plane (x, y) coordinates to `/relative_cone`. 
+We have provided you with an (almost-complete) `HomographyConverter` node! This node subscribes to the `/relative_cone_px` and `/lane_line` topics, which are defined in pixel (u, v) coordinates, and publishes a corresponding target point in relative ground-plane (x, z) coordinates to `/relative_cone`. 
 
-The `HomographyConverter` starts by picking four arbitrary (x, y) points in the ground plane (z=0). It projects these points into the camera frame, using the known intrinsic and extrinsic properties of the camera: 
+The `HomographyConverter` starts by picking four arbitrary (x, z) points in the ground plane (y=0). It projects these points into the camera frame, using the known intrinsic and extrinsic properties of the camera: 
 
 ![](media/homography.jpg)
 
-Then it calls to an OpenCV function to compute the homography matrix, which enables the reverse projection from pixel coordinates (u, v) back into ground plane points (x, y):
+Then it calls to an OpenCV function to compute the homography matrix, which enables the reverse projection from pixel coordinates (u, v) back into ground plane points (x, z):
 
 ![](media/homography2.jpg)
 
