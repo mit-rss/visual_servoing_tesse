@@ -29,9 +29,7 @@ class HomographyConverter():
             CameraInfo, self.seg_cam_info_callback)
 
         self.seg_intrinsic_matrix = None
-        self.seg_extrinsic_matrix = np.array([[-1, 0, 0, -0.05],
-                                              [0, -1, 0, 1.03],
-                                              [0, 0, 1, 1.5]])
+        self.seg_extrinsic_matrix = None
         self.homography_matrix = None
 
         # Subscribe to clicked point messages from rviz  
@@ -49,7 +47,7 @@ class HomographyConverter():
 
 
         # lookahead distance (tunable control parameter)
-        self.LOOKAHEAD_DISTANCE = 4.0
+        self.LOOKAHEAD_DISTANCE = 8.0
 
 
         self.cone_pub = rospy.Publisher("/relative_cone", 
@@ -62,6 +60,41 @@ class HomographyConverter():
         while not rospy.is_shutdown():
             self.publish_cone()
             self.rate.sleep()
+
+    def seg_cam_info_callback(self, msg):
+
+        raise NotImplementedError
+
+        ############################################################################
+        ### YOUR CODE HERE
+
+        ## get the intrinsic parameters of the camera from ROS
+
+        self.seg_intrinsic_matrix = np.array(msg.K).reshape((3, 3))
+
+        ## manually fill in the extrinsic camera parameters using info in
+        ## the lab handout
+
+        # self.seg_extrinsic_matrix = 
+
+        ## pick some points (at least four) in the ground plane
+        PTS_GROUND_PLANE = np.array([[1.0, 0.0, 2.5, 1],
+                            [-1.0, 0.0, 2.5, 1],
+                            [1.0, 0.0, 3.5, 1],
+                            [-1.0, 0.0, 3.5, 1],])
+
+        ## project those points to the image plane using the intrinsic and
+        ## extrinsic camera matrices
+
+        # PTS_IMAGE_PLANE = 
+
+        ## finally, compute the homography matrix to backproject from image
+        ## plane to ground plane
+
+        self.homography_matrix, err = cv2.findHomography(np.float32(PTS_IMAGE_PLANE[:, [0, 1]]), np.float32(PTS_GROUND_PLANE[:, [0, 2]]))
+
+        #############################################################################
+
 
     def publish_cone(self):
         """
@@ -107,40 +140,6 @@ class HomographyConverter():
         marker.pose.position.x = self.message_x
         marker.pose.position.y = self.message_y
         self.marker_pub.publish(marker)
-
-    def seg_cam_info_callback(self, msg):
-        self.seg_intrinsic_matrix = np.array(msg.K).reshape((3, 3))
-
-        # we could get some closed form equations if we wanted, but this is easier for now.
-        # pick some points in the ground plane
-
-        PTS_GROUND_PLANE = np.array([[1.0, 0.0, 2.5, 1],
-                            [-1.0, 0.0, 2.5, 1],
-                            [1.0, 0.0, 3.5, 1],
-                            [-1.0, 0.0, 3.5, 1],])
-
-        PTS_IMAGE_PLANE = np.array([np.matmul(self.seg_intrinsic_matrix,
-                            np.matmul(self.seg_extrinsic_matrix,
-                                np.array(pt).T)
-                            ) for pt in PTS_GROUND_PLANE])
-
-        # normalize
-        PTS_IMAGE_PLANE = np.array([pt / pt[-1] for pt in PTS_IMAGE_PLANE])
-
-        #print(np.float32(PTS_GROUND_PLANE[:, [0, 2]]))
-        #print(np.float32(PTS_IMAGE_PLANE[:, [0, 1]]))
-
-
-        self.homography_matrix, err = cv2.findHomography(np.float32(PTS_IMAGE_PLANE[:, [0, 1]]), np.float32(PTS_GROUND_PLANE[:, [0, 2]]))
-
-        #print("error: ", err)
-
-        # verify homography
-        PTS_BACKPROJECTED = np.matmul(self.homography_matrix,  PTS_IMAGE_PLANE.T)
-        PTS_BACKPROJECTED = np.array([pt / pt[-1] for pt in PTS_BACKPROJECTED.T]).T
-
-        #print(PTS_BACKPROJECTED)
-        # verified to backproject fine
 
 
     def point_callback(self, msg):
