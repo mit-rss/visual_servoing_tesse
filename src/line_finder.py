@@ -10,7 +10,6 @@ from rospy.numpy_msg import numpy_msg
 from sensor_msgs.msg import LaserScan, Image
 from std_msgs.msg import Float32
 from ackermann_msgs.msg import AckermannDriveStamped
-from geometry_msgs.msg import Point, PointStamped
 from visualization_msgs.msg import Marker
 from visualization_msgs.msg import MarkerArray
 from nav_msgs.msg import Odometry

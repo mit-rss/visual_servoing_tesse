@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 import rospy
-from geometry_msgs.msg import PointStamped
 import tf
 from tf.transformations import euler_from_quaternion
 import numpy as np
 import cv2
-from visual_servoing_tesse.msg import cone_location, LaneLine
+from visual_servoing_tesse.msg import ConeLocation, ConeLocationPixel, LaneLine
 from visualization_msgs.msg import Marker
 from sensor_msgs.msg import CameraInfo
 
@@ -17,8 +16,8 @@ class HomographyConverter():
     and publishes a dummy cone position at self.LOOKAHEAD_DISTANCE ahead (for line 
     following) to /relative_cone.
 
-    Subscribes to a point in the camera frame (/relative_cone_px: PointStamped) and 
-    publishes the same point tranformed into the world frame to /relative_cone.
+    Subscribes to a point in the camera frame (/relative_cone_px: ConeLocationPixel) and 
+    publishes the same point tranformed into the world frame to /relative_cone (ConeLocation).
     """
     def __init__(self):
 
@@ -40,7 +39,7 @@ class HomographyConverter():
         LANE_LINE_TOPIC = "/lane_line"
 
         rospy.Subscriber("/relative_cone_px", 
-            PointStamped, self.point_callback)
+            ConeLocationPixel, self.point_callback)
         rospy.Subscriber(LANE_LINE_TOPIC, 
             LaneLine, self.line_callback)
         self.message_x = None
@@ -53,7 +52,7 @@ class HomographyConverter():
 
 
         self.cone_pub = rospy.Publisher("/relative_cone", 
-            cone_location,queue_size=1)
+            ConeLocation,queue_size=1)
         self.marker_pub = rospy.Publisher("/cone_marker",
             Marker, queue_size=1)
         self.tf_listener = tf.TransformListener()
@@ -84,7 +83,7 @@ class HomographyConverter():
             msg_frame_pos[1]+np.cos(yaw)*self.message_y+np.sin(yaw)*self.message_x
         
         # Publish relative cone location
-        relative_cone = cone_location()
+        relative_cone = ConeLocation()
         relative_cone.x_pos = cone_relative_baselink_x
         relative_cone.y_pos = cone_relative_baselink_y
         self.cone_pub.publish(relative_cone)
@@ -145,8 +144,8 @@ class HomographyConverter():
 
     def point_callback(self, msg):
         # get pixel coordinates
-        px = msg.point.x
-        py = msg.point.y
+        u = msg.u
+        v = msg.v
 
         # apply homography matrix
         if self.seg_intrinsic_matrix is None or self.seg_extrinsic_matrix is None:
@@ -162,7 +161,7 @@ class HomographyConverter():
 
         H = self.homography_matrix
 
-        CAM_PT = np.array([px, py, 1]).T
+        CAM_PT = np.array([u, v, 1]).T
 
         WORLD_PT_UNSCALED = np.matmul(H, CAM_PT)
         WORLD_PT = WORLD_PT_UNSCALED / WORLD_PT_UNSCALED[-1]

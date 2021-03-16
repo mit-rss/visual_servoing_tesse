@@ -4,7 +4,7 @@ import cv2 as cv
 import numpy as np
 import rospy
 from sensor_msgs.msg import Image
-from geometry_msgs.msg import PointStamped
+from visual_servoing_tesse.msg import ConeLocationPixel
 from cv_bridge import CvBridge
 
 class ConeDetector():
@@ -18,7 +18,7 @@ class ConeDetector():
     BRIDGE=CvBridge()
     def __init__(self):
         self.sub = rospy.Subscriber(self.SUB_TOPIC, Image, self.image_callback)
-        self.point_pub = rospy.Publisher(self.RELATIVE_CONE,PointStamped, queue_size=5)
+        self.point_pub = rospy.Publisher(self.RELATIVE_CONE, ConeLocationPixel, queue_size=5)
         self.img_pub=rospy.Publisher(self.SEG_IMAGE, Image, queue_size=5)
     def image_callback(self, msg):
         image_message = self.BRIDGE.imgmsg_to_cv2(msg)
@@ -38,11 +38,11 @@ class ConeDetector():
         x_max = x_min+w
         y_max = y_min+h
 
-        mid_point = PointStamped()
-        mid_point.point.x = (x_min+x_max)/2.0
-        mid_point.point.y = (y_min+y_max)/2.0
-        mid_point.point.z = h
-        mid_point.header.frame_id = msg.header.frame_id
+        mid_point = ConeLocationPixel()
+        mid_point.u = (x_min+x_max)/2.0
+        mid_point.v = (y_min+y_max)/2.0
+        #mid_point.point.z = h
+        #mid_point.header.frame_id = msg.header.frame_id
         
         self.point_pub.publish(mid_point)
         
