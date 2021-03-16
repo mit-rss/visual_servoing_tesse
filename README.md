@@ -1,11 +1,9 @@
-# Lab 4: Vision In Tesse
 | Deliverable | Due Date              |
 |---------------|----------------------------------------------------------------------------|
 | Briefing (upload on github pages site)   | Wednesday, March 24th at 1:00PM EDT     |
 | [Team Member Assessment](https://docs.google.com/forms/d/e/1FAIpQLSc--nSO-ml92FV00CBpUzuo6Nk8dNRFLSzMrIfgBwc9WyEgjQ/viewform?usp=sf_link)  | Friday, March 26th at 11:59PM EDT |
 
-
-## Introduction
+# Lab 4: Vision In Tesse
 
 Welcome to Lab 4, where you will learn about color detection, some feature detection algorithms, and how to use the semantic segmentation camera in tesse to allow the racecar to park using a colored cone and follow lines!
 
@@ -165,17 +163,13 @@ Check out this illustration of a camera and world plane. There exists a linear t
 
 ![](media/camera_diagram.jpg)
 ### Find the Homography Matrix
-To find the homography matrix, you should first determine the pixel coordinates of several real world points. You should then measure the physical coordinates of these points on the 2D ground plane. If you gather enough of these point correspondences (at least 4), you have enough information to compute a homography matrix:
-
-#### Notes for finding the homography matrix:
-- The opencv findhomography implementation expects 3X1 data points in homogenous coordinates [X,Y,1].
-- You may need to rescale the homography output X',Y',Z' such that Z' = 1.
+To find the homography matrix, we choose at least four points on the 2D ground plane, and find which pixels they occupy in the camera image. A pairing of real-world point and its camera pixel is known as a point correspondence. If you gather enough of these point correspondences (at least 4), you have enough information to compute a homography matrix:
 
 ![](media/homography2.jpg)
 
-Many existing packages including [OpenCV](https://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html#findhomography) can be used to compute homography matrices. 
+Many existing packages including [OpenCV](https://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html#findhomography) can be used to compute homography matrices from point correspondences. 
 
-We have provided you with an (almost-complete) `HomographyConverter` node. This node subscribes to the `/relative_cone_px` and `/lane_line` topics, which are in pixel (u, v) coordinates, and publishes a corresponding target point in relative ground-plane (x, y) coordinates to `/relative_cone`. Your task is to fill in an appropriate 3x3 rotation matrix which rotates points from the camera frame into the TESSE floor frame. Recall that in both frames, the z-axis points forward. In TESSE, the y-axis points up and the x-axis is to the left. The coordinate frame of the camera is illustrated above.
+We have provided you with an (almost-complete) `HomographyConverter` node which performs this operation! This node subscribes to the `/relative_cone_px` and `/lane_line` topics, which are in pixel (u, v) coordinates, and publishes a corresponding target point in relative ground-plane (x, y) coordinates to `/relative_cone`. Your task is to fill in an appropriate 3x3 rotation matrix which rotates points from the camera frame into the TESSE floor frame. Recall that in both frames, the z-axis points forward. In TESSE, the y-axis points up and the x-axis is to the left. The coordinate frame of the camera is illustrated above.
 
 
 # Module 3: Cone Detection and Parking In Tesse
@@ -251,7 +245,7 @@ The averaged line should be like the red line below.
 --------------------|---------------------------
 ![](media/hough-lines-many.png) | ![](media/hough-line-average.png)
 
-Once you have the m and b of this averaged line, publish your line message to the `lane_line_topic` specified in `params_tesse.yaml` using the provided `LaneLine.msg` type. Again, you can see all the correct topics and spawn points in the skeleton files `src/line_finder.py` and `launch/line_finder.launch`.
+Once you have the m and b of this averaged line, publish your line message to the `lane_line_topic` specified in `params_tesse.yaml` using the provided `LaneLine.msg` type. Again, you can see all the correct topics in the skeleton file `src/line_finder.py`.
 
 The homography node will subscribe from this `lane_line_topic` and transform a point on your line in from the image plane to the ground with respect to your robot!
 
