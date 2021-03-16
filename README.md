@@ -169,7 +169,11 @@ To find the homography matrix, we choose at least four points on the 2D ground p
 
 Many existing packages including [OpenCV](https://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html#findhomography) can be used to compute homography matrices from point correspondences. 
 
-We have provided you with an (almost-complete) `HomographyConverter` node which performs this operation! This node subscribes to the `/relative_cone_px` and `/lane_line` topics, which are in pixel (u, v) coordinates, and publishes a corresponding target point in relative ground-plane (x, y) coordinates to `/relative_cone`. Your task is to fill in an appropriate 3x3 rotation matrix which rotates points from the camera frame into the TESSE floor frame. Recall that in both frames, the z-axis points forward. In TESSE, the y-axis points up and the x-axis is to the left. The coordinate frame of the camera is illustrated above.
+We have provided you with an (almost-complete) `HomographyConverter` node! This node subscribes to the `/relative_cone_px` and `/lane_line` topics, which are in pixel (u, v) coordinates, and publishes a corresponding target point in relative ground-plane (x, y) coordinates to `/relative_cone`. 
+
+The `HomographyConverter` starts by picking four arbitrary (x, y) points in the ground plane. It projects these points into the camera frame, as described above. Then it calls to an OpenCV function to compute the homography matrix, which performs the reverse projection from pixel coordinates (u, v) back into ground plane points (x, y). 
+
+Your task is to help the the `HomographyConverter` with its first projection, from the ground plane into the camera frame. You will simple need to fill in the appropriate entries for the rotation matrix `R_floor_cam`, which rotates points from the relative floor frame to the camera frame. Recall that in both frames, the z-axis points forward. In the TESSE relative floor frame, the y-axis points up and the x-axis is to the left. The coordinate frame of the camera is illustrated above.
 
 
 # Module 3: Cone Detection and Parking In Tesse
