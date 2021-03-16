@@ -111,19 +111,19 @@ Line Finder Vision Node:
  - Publishes: `/lane_line` [LaneLine](https://github.com/mit-rss/visual_servoing_tesse/blob/main/msg/LaneLine.msg)
 
 Cone Parking Vision Node:
- - Subscribes: `/tesse/seg_cam/rgb/image_raw`[Image](https://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/Image.html)
- - Publishes: `/relative_cone_px`[PointStamped](http://docs.ros.org/en/kinetic/api/geometry_msgs/html/msg/PointStamped.html)
+ - Subscribes: `/tesse/seg_cam/rgb/image_raw` [Image](https://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/Image.html)
+ - Publishes: `/relative_cone_px` [PointStamped](http://docs.ros.org/en/kinetic/api/geometry_msgs/html/msg/PointStamped.html)
 
 Homography Node:
  - Subscribes: `/relative_cone_px` [PointStamped](http://docs.ros.org/en/kinetic/api/geometry_msgs/html/msg/PointStamped.html)
- - Subscribes: `/lane_line` [LaneLine] (https://github.com/mit-rss/visual_servoing_tesse/blob/main/msg/LaneLine.msg)
+ - Subscribes: `/lane_line` [LaneLine](https://github.com/mit-rss/visual_servoing_tesse/blob/main/msg/LaneLine.msg)
  - Publishes: `/relative_cone` [cone_location](https://github.com/mit-rss/visual_servoing_tesse/blob/main/msg/cone_location.msg)
  - Publishes: any rviz markers for the cone :)
 
 Parking/Line Follower Controller Node:
-- Subscribes: `/relative_cone`
+- Subscribes: `/relative_cone` [cone_location](https://github.com/mit-rss/visual_servoing_tesse/blob/main/msg/cone_location.msg)
 - Publishes: `/tesse/drive` [AckermannDriveStamped](http://docs.ros.org/en/melodic/api/ackermann_msgs/html/msg/AckermannDriveStamped.html)
-- Publishes: `/parking_error`[parking_error](https://github.com/mit-rss/visual_servoing_tesse/blob/main/msg/parking_error.msg)
+- Publishes: `/parking_error` [parking_error](https://github.com/mit-rss/visual_servoing_tesse/blob/main/msg/parking_error.msg)
 
 # Module 1: Cone Detection Via Color Segmentation
 In lecture we learned lots of different ways to detect objects. Sometimes it pays to train a fancy neural net to do the job. Sometimes we are willing to wait and let SIFT find it. Template matching is cool too.
