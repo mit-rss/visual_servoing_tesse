@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import rospy
+from visual_servoing_tesse.msg import cone_location, parking_error
 from geometry_msgs.msg import PointStamped
 from ackermann_msgs.msg import AckermannDriveStamped
 import numpy as np
@@ -9,13 +10,11 @@ class ParkingController():
     DRIVE_TOPIC = "/tesse/drive"
     CONE_LOCATION = "/relative_cone"
     PARKING_ERROR_TOPIC = "/parking_error"
-    CONE_DESIRED_HEIGHT = 125.0
-    CONE_DESIRED_ANGEL = 0.0
     def __init__(self):
-        self.pub = rospy.Publisher(self.DRIVE_TOPIC, AckermannDriveStamped, queue_size = 5)
-        self.sub = rospy.Subscriber(self.CONE_LOCATION, PointStamped, self.driveCallback)
-
-    def driveCallback(self,msg):
+        self.drive_pub = rospy.Publisher(self.DRIVE_TOPIC, AckermannDriveStamped, queue_size = 5)
+        self.sub = rospy.Subscriber(self.CONE_LOCATION, cone_location, self.relative_cone_callback)
+	self.error_pub = rospy.Publisher(self.PARKING_ERROR_TOPIC, parking_error, queue_size = 5)
+    def relative_cone_callback(self,msg):
         ##YOUR CODE
         pass
 
