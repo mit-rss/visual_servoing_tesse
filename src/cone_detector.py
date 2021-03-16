@@ -12,7 +12,7 @@ class ConeDetector():
     HIGH_THRESHOLD = np.asarray([135, 185,147])
     SUB_TOPIC = "tesse/seg_cam/rgb/image_raw"
     SEG_IMAGE = "/threshold_msgs"
-    RELATIVE_CONE="/relative_cone"
+    RELATIVE_CONE="/relative_cone_px"
     BRIDGE=CvBridge()
     def __init__(self):
         self.sub = rospy.Subscriber(self.SUB_TOPIC, Image, self.image_callback)
