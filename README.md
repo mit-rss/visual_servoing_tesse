@@ -1,14 +1,11 @@
-# Lab 4: Vision In Tesse
-
 | Deliverable | Due Date              |
 |---------------|----------------------------------------------------------------------------|
 | Briefing (upload on github pages site)   | Wednesday, March 24th at 1:00PM EDT     |
 | [Team Member Assessment](https://docs.google.com/forms/d/e/1FAIpQLSc--nSO-ml92FV00CBpUzuo6Nk8dNRFLSzMrIfgBwc9WyEgjQ/viewform?usp=sf_link)  | Friday, March 26th at 11:59PM EDT |
 
+# Lab 4: Vision In Tesse
 
-## Introduction
-
-Welcome to Lab 4, where you will learn about color segmentation, feature detection algorithms, and how to use the semantic segmentation camera in tesse to allow the racecar to park using a colored cone and follow lines!
+Welcome to Lab 4, where you will learn about color detection, some feature detection algorithms, and how to use the semantic segmentation camera in tesse to allow the racecar to park using a colored cone and follow lines!
 
 The semantic segmentation camera provides images that classify every object in the image by displaying them with a different color according to the object label. (You can see the camera images when you run `rqt_image_view` after your tesse-ros-bridge node and executable are up and running.)
 
@@ -39,13 +36,10 @@ You can view the rubric for the [briefing](https://docs.google.com/document/d/1N
 | satisfactory completion of Module 4 | 5% |
 
 The elements you should include in your Lab 4 presentation include:
-- IOU scores for color segmentation of cone
-- Explaining vision algorithm used/implemented for cone and line detection. Why does each algorithm perform as it does on each module?
+- Explaining vision algorithm used/implemented. Why does each algorithm perform as it does on each module?
 - Explaining the homography transformation. How do we convert pixels to plane coordinates?
-- Demonstrating and explaining performance of controllers. Make sure you mention your method for tuning the controller gains for both parking and line-following. Hint: include error plots from **rqt_plot**
+- Demonstrating and explaining performance controllers. Make sure you mention your method for tuning the controller gains for both parking and line-following. Hint: include error plots from **rqt_plot**
 - Demonstrating and explaining hough-transformations to extract the line from the dashed road line-dividers. 
-
-Please include videos of your parking and line following, screen shots, error plots, data visualizations, etc. in your presentation as evidence of these deliverables. A good report will make quantitative and qualitative evaluations of your results.
 
 ### Lab Modules
 This lab has a lot in it, so we are encouraging parallelization by breaking up the components of the lab into 4 distinct modules, which you will combine together. Each module tackles an interesting problem in computer vision/controls.  
@@ -55,7 +49,7 @@ This lab has a lot in it, so we are encouraging parallelization by breaking up t
 - Module 4: Line Detection via Hough Transforms
 
 Here's how they fit together:
-In Module 1, you will use color segmentation to find objects in images and get familiar with some opencv funtions to identify a cone in images. 
+In Module 1, you will learn a basic color detection algorithm to find objects in images and get familiar with some opencv funtions to identify a cone in images. 
 
 In Module 2 you will learn how to transform a pixel coordinate to the frame of reference of the robot in the world! 
 
@@ -179,7 +173,7 @@ To find the homography matrix, you should first determine the pixel coordinates 
 
 Many existing packages including [OpenCV](https://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html#findhomography) can be used to compute homography matrices. 
 
-We have provided you with an (almost-complete) `HomographyConverter` node. This node subscribes to a 
+We have provided you with an (almost-complete) `HomographyConverter` node. This node subscribes to the `/relative_cone_px` and `/lane_line` topics, which are in pixel (u, v) coordinates, and publishes a corresponding target point in relative ground-plane (x, y) coordinates to `/relative_cone`. Your task is to fill in an appropriate 3x3 rotation matrix which rotates points from the camera frame into the TESSE floor frame. Recall that in both frames, the z-axis points forward. In TESSE, the y-axis points up and the x-axis is to the left. The coordinate frame of the camera is illustrated above.
 
 
 # Module 3: Cone Detection and Parking In Tesse
