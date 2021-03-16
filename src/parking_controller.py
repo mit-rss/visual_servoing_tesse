@@ -7,7 +7,8 @@ import numpy as np
 class ParkingController():
 
     DRIVE_TOPIC = "/tesse/drive"
-    CONE_LOCATION = "/cone_relative"
+    CONE_LOCATION = "/relative_cone"
+    PARKING_ERROR_TOPIC = "/parking_error"
     CONE_DESIRED_HEIGHT = 125.0
     CONE_DESIRED_ANGEL = 0.0
     def __init__(self):
