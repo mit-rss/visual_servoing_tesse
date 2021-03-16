@@ -182,7 +182,7 @@ Then it calls to an OpenCV function to compute the homography matrix, which enab
 
 ![](media/homography2.jpg)
 
-Your task is to help the the `HomographyConverter` project some points from the ground plane into the camera frame, and then use those points to compute the homography matrix and enable the reverse projection (which will allow you to localize your cone). You will need to fill in the `seg_cam_info_callback` function. The intrinsic camera matrix is read for you from the appropriate ROS message. You will need to define the extrinsic camera matrix manually, then apply the appropriate mathematical operations on PTS_GROUND_PLANE, and finally compute the homography matrix with an appropriate call to `cv2.findHomography`.
+Your task is to help the the `HomographyConverter` project some points from the ground plane into the camera frame, and then use those points to compute the homography matrix (which performs the reverse projection). You will need to fill in the `seg_cam_info_callback` function. The intrinsic camera matrix is read for you from the appropriate ROS message. You will need to define the extrinsic camera matrix manually, then apply the appropriate mathematical operations on PTS_GROUND_PLANE, and finally compute the homography matrix with an appropriate call to `cv2.findHomography`.
 
 Here is some information that will be useful in constructing the extrinsic camera matrix:
 - In the robot frame, the z-axis points up, the x-axis points forward, and the y-axis points to the left.
