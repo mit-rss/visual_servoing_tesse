@@ -3,7 +3,7 @@
   <!-- 1 is Windridge City, 2 is test scene -->
   <arg name="initial_scene"       default="1"/>
   <arg name="csv_path"  default="$(find visual_servoing_tesse)/tesse_windridge_city_scene_segmentation_mapping.csv" />
-  <param name="/track" value="line_follower_flat" />
+  <param name="/track" value="big_cone_parking" />
   <!-- Maps and TESSE simulator interface -->
   <include file="$(find tesse_ros_bridge)/launch/tesse_bridge.launch">
       <arg name="initial_scene" value="$(arg initial_scene)"/>
