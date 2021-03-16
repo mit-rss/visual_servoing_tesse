@@ -233,9 +233,9 @@ These plots are super useful in controller tuning/debugging (and any other time 
 You will be using these plots to demonstrate controller performance for your presentation.
 
 # Module 4: Line Follower
-We're going to be implementing a realistic line following controller and deploying it on the road! Specifically, your task is to follow the center (dashed) line of the road as closely as possible.
+We're going to be implementing a realistic line following controller and deploying it on the road! Specifically, your task is to follow the center line of the road as closely as possible.
 
-Here is the view from the semantic segmentation, and as you can see the lane markers are dark blue here:
+Here is the view from the semantic segmentationcamera; as you can see, the lane markers are rendered in dark blue:
 
   Original      | Segmentation Camera
 --------------------|---------------------------
