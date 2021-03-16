@@ -234,14 +234,6 @@ These plots are super useful in controller tuning/debugging (and any other time 
 You will be using these plots to demonstrate controller performance for your presentation.
 
 # Module 4: Line Follower
-After you and your team put your modules together to park in front of a cone, a modification of your controller will allow you to create a line follower. Like a donkey chasing a carrot, if you restrict the view of your robot to what is a little ahead of it you will follow a colored line.
-
-This works by setting a lookahead distance. See an example [here](https://gfycat.com/SeveralQueasyAmberpenshell).
-
-  Original      | Cropped
---------------------|---------------------------
-![](media/orange_circle.jpg) | ![](media/blacked_out_circle.jpg)
-
 We're going to be doing a realistic line follower on the road in simulation! You are going to be following the center line of the road.
 
 Here is the view from the semantic segmentation, and as you can see the lane markers are dark blue here:
@@ -269,6 +261,14 @@ Once you have the m and b of this averaged line, publish your line message to th
 The homography node will subscribe from this `lane_line_topic` and transform a point on your line in from the image plane to the ground with respect to your robot!
 
 Now you're ready to choose a lookahead distance on your line and use your parking controller to follow it.
+
+After you and your team put your modules together to park in front of a cone, a modification of your controller will allow you to create a line follower. To get intuition for why this works, like a donkey chasing a carrot, if you restrict the view of your robot to what is a little ahead of it you will follow a colored line.
+
+This works by setting a lookahead distance. See an example [here](https://gfycat.com/SeveralQueasyAmberpenshell).
+
+  Original      | Cropped
+--------------------|---------------------------
+![](media/orange_circle.jpg) | ![](media/blacked_out_circle.jpg)
 
 ## Bringing it together:
 Suggested steps:
