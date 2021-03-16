@@ -9,9 +9,10 @@ from cv_bridge import CvBridge
 
 class ConeDetector:
     #Semantic RGB of the cone object
-    SEG_LABEL = (130,180,142)
+    SEG_LABEL = "model"
+    CONE_COLOR = np.asarray([194,253,94])
     SUB_TOPIC = "/tesse/seg_cam/rgb/image_raw"
-    PUB_TOPIC = "/relative_cone"
+    PUB_TOPIC = "/relative_cone_px"
     def __init__(self):
         self.sub = rospy.Subscriber(self.SUB_TOPIC, Image, self.callback);
         self.pub = rospy.Publisher(self.PUB_TOPIC, PointStamped, queue_size=5)
