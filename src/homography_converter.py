@@ -169,8 +169,8 @@ class HomographyConverter():
         x, y = WORLD_PT[0], WORLD_PT[1] # coordinates in world frame
 
         # switch to rviz coordinate system
-        self.message_x = y
-        self.message_y = x * -1
+        self.message_x = x
+        self.message_y = y
         self.message_frame = "base_link"
         
         # Draw a marker for visualization
@@ -218,14 +218,14 @@ class HomographyConverter():
         b = y0 - m * x0
 
         # find the point on the line that is LOOKAHEAD_DISTANCE ahead of the robot
-        ylook = self.LOOKAHEAD_DISTANCE
-        xlook = (ylook - b) / m
+        xlook = self.LOOKAHEAD_DISTANCE
+        ylook = m * xlook + b
 
         #rospy.loginfo(("xlook", xlook))
 
         # switch to rviz coordinate system
-        self.message_x = ylook
-        self.message_y = xlook * -1
+        self.message_x = xlook
+        self.message_y = ylook
         self.message_frame = "base_link"
         
         # Draw a marker for visualization

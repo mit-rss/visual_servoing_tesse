@@ -153,10 +153,10 @@ If you recall from lecture, a camera is a sensor that converts 3D points (x,y,z)
 
 In robotics, we are generally concerned with the inverse problem. Given a 2D (image) point, how can we extract a 3D (world) point?
 We need some tools and tricks to make that sort of calculation, as we lost (depth) information projecting down to our 2D pixel. Stereo cameras, for example, coordinate points seen from two cameras to add information and retrieve the X-Y-Z coordinates.
-In this lab, we will use another interesting fact about linear transformations for back out X-Z positions of pixels. (In TESSE, the Y-axis is vertical.)
+In this lab, we will use another interesting fact about linear transformations to back out the X-Y positions of objects on the ground from the pixels they appear in. 
 
 ### Coordinate space conversion
-The racecar can’t roll over or fly (no matter how cool it might look), so the ZED camera will always have a fixed placement with respect to the ground plane. By determining exactly what that placement is, we can compute a function that takes in image pixel coordinates (u, v) and returns the coordinates of the point on the floor (x, 0, z) relative to the car that projects onto the pixel (u, v).
+The racecar can’t roll over or fly (no matter how cool it might look), so the ZED camera will always have a fixed placement with respect to the ground plane. By determining exactly what that placement is, we can compute a function that takes in image pixel coordinates (u, v) and returns the coordinates of the point on the floor (x, y, 0) relative to the car that projects onto the pixel (u, v).
 
 This “function” is called a homography. Even though we can’t back out arbitrary 3D points from 2D pixels without lots of extra work, we can back out 2D world points if those points lie on a plane (and can therefore be thought of as 2D) that is fixed with respect to our camera.
 
@@ -172,23 +172,22 @@ To find the homography matrix, we choose at least four points on the 2D ground p
 
 Many existing packages including [OpenCV](https://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html#findhomography) can be used to compute homography matrices from point correspondences. 
 
-We have provided you with an (almost-complete) `HomographyConverter` node! This node subscribes to the `/relative_cone_px` and `/lane_line` topics, which are defined in pixel (u, v) coordinates, and publishes a corresponding target point in relative ground-plane (x, z) coordinates to `/relative_cone`. 
+We have provided you with an (almost-complete) `HomographyConverter` node! This node subscribes to the `/relative_cone_px` and `/lane_line` topics, which are defined in pixel (u, v) coordinates, and publishes a corresponding target point in relative ground-plane (x, y) coordinates to `/relative_cone`. 
 
-The `HomographyConverter` starts by picking four arbitrary (x, z) points in the ground plane (y=0). It projects these points into the camera frame, using the known intrinsic and extrinsic properties of the camera: 
+The `HomographyConverter` starts by picking four arbitrary (x, y) points in the ground plane (z=0). It projects these points into the camera frame, using the known intrinsic and extrinsic properties of the camera: 
 
 ![](media/homography.jpg)
 
-Then it calls to an OpenCV function to compute the homography matrix, which enables the reverse projection from pixel coordinates (u, v) back into ground plane points (x, z):
+Then it calls to an OpenCV function to compute the homography matrix, which enables the reverse projection from pixel coordinates (u, v) back into ground plane points (x, y):
 
 ![](media/homography2.jpg)
 
 Your task is to help the the `HomographyConverter` with its first projection, from the ground plane into the camera frame. You will need to fill in the `seg_cam_info_callback` function to project the points in PTS_GROUND_PLANE into the image plane. The intrinsic camera matrix is read for you from the appropriate ROS message. You will need to define the extrinsic camera matrix manually, then apply the appropriate mathematical operations on PTS_GROUND_PLANE.
 
 Here is some information that will be useful in constructing the extrinsic camera matrix:
-- The z-axis points straight forward from the robot in both the image plane and TESSE relative ground plane.
-- In TESSE, the y-axis points up and the x-axis points to the left.
-- The orientation of the xy- image plane is illustrated in the Module 1 section.
-- The translation of each TESSE camera relative to the robot body is defined in the `ROS/params/camera_params.yaml` file of the `tesse_ros_bridge` repo. For the tasks in this lab, we are using the SEGMENTATION camera.
+- In the robot frame, the z-axis points up, the x-axis points forward, and the y-axis points to the left.
+- The orientation of the xy- image plane is illustrated in the Module 1 section. We consider the z-axis of the image coordinate frame to point forward from the robot.
+- The segmentation camera in tesse is mounted 0.05m to the right and 1.50m to the front of the robot body center. It is elevated 1.03 meters above the ground. (You can find these parameters yourself for all TESSE cameras in `tesse-ros-bridge/ROS/params/camera_params.yaml`.)
 
 
 # Module 3: Cone Detection and Parking In Tesse
