@@ -17,73 +17,10 @@ We provide you with a csv file that maps these semantic class labels to the rgba
 
 In this lab, your team will do the following:
 * Experiment with object detection algorithms
-* Learn how to detect a road lane line in images
 * Learn how to transform a pixel from an image to a real world plane
 * Develop a parking controller to park your robot in front of an orange cone
+* Learn how to detect a road lane line in images
 * Extend your parking controller into a line following controller
-
-### Lab Modules
-This lab has a lot in it, so we are encouraging parallelization by breaking up the components of the lab into 4 distinct modules, which you will combine together. Each module tackles an interesting problem in computer vision/controls.  
-- Module 1: Cone Detection via Color Segmentation
-- Module 2: Homography Transformation of images to the world plane
-- Module 3: Parking in front of a cone in Tesse
-- Module 4: Line Detection via Hough Transforms
-
-Here's how they fit together:
-In Module 1, you will learn a basic color detection algorithm to find objects in images and get familiar with some opencv funtions to identify a cone in images. 
-
-In Module 2 you will learn how to transform a pixel coordinate to the frame of reference of the robot in the world! 
-
-Now that you know how to find a cone in images and transform that coordinate to the real world, Module 3 involves developing a parking controller to navigate the tesse car to park in front of an orange cone in simulation. 
-
-Finally, you're going to learn one additional feature detection algorithm in Module 4 for extracting lines from images and use your knowledge of homography and the same parking controller to follow a dashed lane line in simulation. You can see how each module builds on top of the previous one.  
-
-### Bringing it together:
-It's time to make your robot park in front of a cone.
-Suggested steps:
-
-1. Write a ros node using Module 2 that publishes the relative location of a cone in view of the segmentation camera. Make sure you can see the cone in rviz before trying to do control. You should now be able to teleop your car around and accurately determine its position relative to the car using just the camera. Make sure to publish a Marker to RVIZ representing the cone. The rviz cone should appear where the real cone does.
-2. To write the parking controller to navigate to and stop in front of the cone, listen to the relative cone position, and publish drive commands. Congratulations are in order when you can park successfully.
-3. In Module 4 detect the dashed lane line by first using hough transforms to extract the lines from the image and average them to your main lane line you wish to follow. It's helpful to view the masked images using opencv functions to debug. Once you have this line, publish to a lane line message so your homography node can subscribe to it and publish the relative location on the line a certain lookahead distance away from the car.
-4. Modify your parking controller to listen to your new "relative cone" and follow the line.
-
-### Computer Setup
-For this lab, you will need Opencv3. The virtual machines already have it, but it likely needs to be updated to 3.4 and are missing the opencv-contrib package (this is where some propietary algorithms were moved to in opencv3). If you are running linux natively, depending on what you've done before you may or may not have the correct setup. Try running these commands as well, and the correct packages will install as needed.
-
-Steps:
-
-`sudo apt-get install python-pip`
-
-`pip install opencv-python==3.4.2.16`
-
-`pip install opencv-contrib-python==3.4.2.16`
-
-`pip install imutils`
-
-You will also need tesse set up. Refer to instructions in [TESSE setup handout](https://github.com/mit-rss/tesse_install) if you need a reminder.
-
-Make sure you checkout the `visual_servoing_tesse` branch of `tesse-ros-bridge` [here](https://github.mit.edu/rss/tesse-ros-bridge/tree/visual_servoing_tesse)! Spawn points will not work for this lab otherwise. 
-
-Lastly, download the new most up to date executable for this lab! [here](https://drive.google.com/drive/u/1/folders/18dQDeseaLYEjFnNGEQhOgWi1wMHtVmdu)
-
-### Analysis:
-We are also looking for a bit more in terms of experimental analysis in the lab than we have in the past. We are, in particular, looking for analysis of your vision algorithm and the controller.
-
-Vision Analysis:
-We wrote some code to test the Intersection over Union (IOU) scores of your vision algorithms on the datasets provided. IOU is a measure of how accurate bounding boxes are, and is a choice metric for analysis of object detection algorithms (including for neural networks!). Go into **computer_vision/**  and run:
-
-`python cv_test.py cone`
-
-To test your algorithm against the cone dataset. Results will be outputted to a .csv file in **scores/**. Some images will not yield good results. This is expected, and we would like to know why the algorithm works/doesn't work for certain images in your writeup.
-
-Controller analysis:
-
-When you write the parking controller in Module 3, you will be publishing error messages. Now it’s time to use **rqt_plot** to generate some plots. Try running the following experiments:
-- Drive your car around in tesse (after launching the cone detector node) so the segmentation camera faces the cone from different locations and angles, then launch your parking controller. Your car should drive straight to the cone and stop in front of the cone. Show us plots of x-error and total-error over time, and be prepared to discuss.
-- Compare plots at different speeds, and see how error signals change with speed.
-
-Be able to explain why this controller works for line following as well, and demonstrate the working algorithm and what changes you had to make.
-
 
 ### Submission and Grading
 Lab 4 will require a briefing, but no report. You will deliver an 8-minute briefing presentation (plus 3 minutes Q&A) together with your team, upload the briefing slides to your github pages website, and submit a [team member assessment form](https://docs.google.com/forms/d/e/1FAIpQLSc--nSO-ml92FV00CBpUzuo6Nk8dNRFLSzMrIfgBwc9WyEgjQ/viewform?usp=sf_link). See the deliverables chart at the top of this page for due dates and times.
@@ -103,6 +40,62 @@ The elements you should include in your Lab 4 presentation include:
 - Explaining the homography transformation. How do we convert pixels to plane coordinates?
 - Demonstrating and explaining performance controllers. Make sure you mention your method for tuning the controller gains for both parking and line-following. Hint: include error plots from **rqt_plot**
 - Demonstrating and explaining hough-transformations to extract the line from the dashed road line-dividers. 
+
+### Lab Modules
+This lab has a lot in it, so we are encouraging parallelization by breaking up the components of the lab into 4 distinct modules, which you will combine together. Each module tackles an interesting problem in computer vision/controls.  
+- Module 1: Cone Detection via Color Segmentation
+- Module 2: Homography Transformation of images to the world plane
+- Module 3: Cone Detection and Parking In Tesse
+- Module 4: Line Detection via Hough Transforms
+
+Here's how they fit together:
+In Module 1, you will learn a basic color detection algorithm to find objects in images and get familiar with some opencv funtions to identify a cone in images. 
+
+In Module 2 you will learn how to transform a pixel coordinate to the frame of reference of the robot in the world! 
+
+Now that you know how to find a cone in images and transform that coordinate to the real world, Module 3 involves developing a parking controller to navigate the tesse car to park in front of an orange cone in simulation. 
+
+Finally, you're going to learn one additional feature detection algorithm in Module 4 for extracting lines from images and use your knowledge of homography and the same parking controller to follow a dashed lane line in simulation. You can see how each module builds on top of the previous one.  
+
+### Computer Setup and Important Tesse Links
+For this lab, you will need Opencv3. The virtual machines already have it, but it likely needs to be updated to 3.4 and are missing the opencv-contrib package (this is where some propietary algorithms were moved to in opencv3). If you are running linux natively, depending on what you've done before you may or may not have the correct setup. Try running these commands as well, and the correct packages will install as needed.
+
+Steps:
+
+`sudo apt-get install python-pip`
+
+`pip install opencv-python==3.4.2.16`
+
+`pip install opencv-contrib-python==3.4.2.16`
+
+`pip install imutils`
+
+You will also need tesse set up. Refer to instructions in [TESSE setup handout](https://github.com/mit-rss/tesse_install) if you need a reminder.
+
+Make sure you checkout the `visual_servoing_tesse` branch of `tesse-ros-bridge` [here](https://github.mit.edu/rss/tesse-ros-bridge/tree/visual_servoing_tesse)! Spawn points will not work for this lab otherwise. 
+
+Lastly, download the new most up to date executable for lab 4 [here]!(https://drive.google.com/drive/u/1/folders/18dQDeseaLYEjFnNGEQhOgWi1wMHtVmdu)
+**remember to update your IP addresses after you pull tesse-ros-bridge**
+
+Look at the tesse_install [handout](https://github.com/mit-rss/tesse_install) for a refresher on how to launch tesse if you need it. 99% of networking issues will be resolved if you follow the steps in the handout, so please refer to it :).
+
+### Analysis:
+We are also looking for a bit more in terms of experimental analysis in the lab than we have in the past. We are, in particular, looking for analysis of your vision algorithm and the controller.
+
+Vision Analysis:
+We wrote some code to test the Intersection over Union (IOU) scores of your vision algorithms on the datasets provided. IOU is a measure of how accurate bounding boxes are, and is a choice metric for analysis of object detection algorithms (including for neural networks!). Go into **computer_vision/**  and run:
+
+`python cv_test.py cone`
+
+To test your algorithm against the cone dataset. Results will be outputted to a .csv file in **scores/**. Some images will not yield good results. This is expected, and we would like to know why the algorithm works/doesn't work for certain images in your writeup.
+
+Controller analysis:
+
+When you write the parking controller in Module 3, you will be publishing error messages. Now it’s time to use **rqt_plot** to generate some plots. Try running the following experiments:
+- Drive your car around in tesse (after launching the cone detector node) so the segmentation camera faces the cone from different locations and angles, then launch your parking controller. Your car should drive straight to the cone and stop in front of the cone. Show us plots of x-error and total-error over time, and be prepared to discuss.
+- Compare plots at different speeds, and see how error signals change with speed.
+
+Be able to explain why this controller works for line following as well, and demonstrate the working algorithm and what changes you had to make.
 
 # Nodes and Topics
 
@@ -183,8 +176,8 @@ Many existing packages including [OpenCV](https://docs.opencv.org/2.4/modules/ca
 We have provided you with an (almost-complete) `HomographyConverter` node. This node subscribes to a 
 
 
-# Module 3: Parking in front of Cone in Tesse
-  Segmentation      | Cone in mask (TODO REPLACE THESE IMAGES)
+# Module 3: Cone Detection and Parking In Tesse
+  Segmentation      | Cone in mask (TODO lisa REPLACE THESE IMAGES with real cone images)
 --------------------|---------------------------
 ![](media/cone.png) | ![](media/cone-threshold.png)
 
@@ -249,21 +242,26 @@ The first step is to extract the semantic label and color that identify the lane
 
 Then you'll want to apply a mask over your image just like in cone detection to keep just the lane markers. What else can you mask out? (hint: There probably won't be any lanes in the sky.) Dilation is a good way to exagerate the road lines (relevant for the dashed ones) so they don't dissapear in the next line finding step!
 
-The meat and potatoes of this module is the [Hough Line Transform](https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_houghlines/py_houghlines.html). This will allow you to detect broken and imperfect lines in the image. In practice you will end up with many hough lines like so:
+The meat and potatoes of this module is the [Hough Line Transform](https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_houghlines/py_houghlines.html). This will allow you to detect broken and imperfect lines in the image. In practice you will end up with many hough lines like the left image below, so you will need to average them to be one single line.
+The averaged line should be like the red line below.
 
-<img src="media/hough-lines-many.png" width="400">
+  Many Hough LInes      | Averaged Line
+--------------------|---------------------------
+![](media/media/hough-lines-many.png) | ![](media/hough-line-average.png)
 
-, so you will need to average them to be one single line.
-The averaged line should be like the red line below:
-
-<img src="media/hough-line-average.png" width="400">
-
-Once you have the m and b of this averaged line, publish your line parameters to the `lane_line_topic` specified in `params_tesse.yaml` using the provided `LaneLine.msg` type. Again, you can see all the correct topics in the skeleton file `src/line_finder.py`.
+Once you have the m and b of this averaged line, publish your line message to the `lane_line_topic` specified in `params_tesse.yaml` using the provided `LaneLine.msg` type. Again, you can see all the correct topics in the skeleton file `src/line_finder.py`.
 
 The homography node will subscribe from this `lane_line_topic` and transform a point on your line in from the image plane to the ground with respect to your robot!
 
 Now you're ready to choose a lookahead distance on your line and use your parking controller to follow it.
 
+## Bringing it together:
+Suggested steps:
+
+1. Write a ros node using Module 2 that publishes the relative location of a cone in view of the segmentation camera. Make sure you can see the cone in rviz before trying to do control. You should now be able to teleop your car around and accurately determine its position relative to the car using just the camera. Make sure to publish a Marker to RVIZ representing the cone. The rviz cone should appear where the real cone does.
+2. To write the parking controller to navigate to and stop in front of the cone, listen to the relative cone position, and publish drive commands. Congratulations are in order when you can park successfully.
+3. In Module 4 detect the dashed lane line by first using hough transforms to extract the lines from the image and average them to your main lane line you wish to follow. It's helpful to view the masked images using opencv functions to debug. Once you have this line, publish to a lane line message so your homography node can subscribe to it and publish the relative location on the line a certain lookahead distance away from the car.
+4. Modify your parking controller to listen to your new "relative cone" and follow the line.
 
 ### General Tips/FAQ:
 
