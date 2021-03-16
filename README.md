@@ -247,7 +247,7 @@ The averaged line should be like the red line below.
 
   Many Hough LInes      | Averaged Line
 --------------------|---------------------------
-![](media/media/hough-lines-many.png) | ![](media/hough-line-average.png)
+![](media/hough-lines-many.png) | ![](media/hough-line-average.png)
 
 Once you have the m and b of this averaged line, publish your line message to the `lane_line_topic` specified in `params_tesse.yaml` using the provided `LaneLine.msg` type. Again, you can see all the correct topics in the skeleton file `src/line_finder.py`.
 
