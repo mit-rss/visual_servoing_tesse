@@ -230,7 +230,7 @@ These plots are super useful in controller tuning/debugging (and any other time 
 
 - Type in the topic you want to graph in the top left of the gui.
 - Adjust the axes with the icon that looks like a green checkmark (top left menu bar).
-- 
+
 You will be using these plots to demonstrate controller performance for your presentation.
 
 # Module 4: Line Follower
