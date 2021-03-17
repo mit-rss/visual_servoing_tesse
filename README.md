@@ -1,8 +1,8 @@
 # Lab 4: Vision In Tesse
 | Deliverable | Due Date              |
 |---------------|----------------------------------------------------------------------------|
-| Briefing (upload on github pages site)   | Wednesday, March 24th at 1:00PM EDT     |
-| [Team Member Assessment](https://docs.google.com/forms/d/e/1FAIpQLSc--nSO-ml92FV00CBpUzuo6Nk8dNRFLSzMrIfgBwc9WyEgjQ/viewform?usp=sf_link)  | Friday, March 26th at 11:59PM EDT |
+| Briefing (upload on github pages site)   | Wednesday, March 31st at 1:00PM EDT     |
+| [Team Member Assessment](https://docs.google.com/forms/d/e/1FAIpQLSc--nSO-ml92FV00CBpUzuo6Nk8dNRFLSzMrIfgBwc9WyEgjQ/viewform?usp=sf_link)  | Friday, April 2nd at 11:59PM EDT |
 
 ## Introduction
 
