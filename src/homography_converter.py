@@ -73,15 +73,17 @@ class HomographyConverter():
         self.seg_intrinsic_matrix = np.array(msg.K).reshape((3, 3))
 
         ## manually fill in the extrinsic camera parameters using info in
-        ## the lab handout
+        ## the lab handout. It helps to plot the axes of base_link_gt and
+        ## left_cam in rviz, then think about how to construct the transform
+        ## from of base_link_gt with respect to the camera.
 
         # self.seg_extrinsic_matrix = 
 
         ## pick some points (at least four) in the ground plane
-        PTS_GROUND_PLANE = np.array([[1.0, 0.0, 2.5, 1],
-                            [-1.0, 0.0, 2.5, 1],
-                            [1.0, 0.0, 3.5, 1],
-                            [-1.0, 0.0, 3.5, 1],])
+        PTS_GROUND_PLANE = np.array([[2.5, 1.0, 0.0, 1],
+                            [2.5, -1.0, 0.0, 1],
+                            [3.5, 1.0, 0.0, 1],
+                            [3.5, -1.0, 0.0, 1],])
 
         ## project those points to the image plane using the intrinsic and
         ## extrinsic camera matrices
@@ -105,7 +107,7 @@ class HomographyConverter():
             return
         try:
             msg_frame_pos, msg_frame_quat = self.tf_listener.lookupTransform(
-                "base_link", self.message_frame, rospy.Time(0))
+                "base_link_gt", self.message_frame, rospy.Time(0))
         except:
             return
         # Using relative transformations, convert cone in whatever frame rviz
@@ -130,9 +132,9 @@ class HomographyConverter():
         marker.header.frame_id = self.message_frame
         marker.type = marker.CYLINDER
         marker.action = marker.ADD
-        marker.scale.x = .2
-        marker.scale.y = .2
-        marker.scale.z = .2
+        marker.scale.x = 1.2
+        marker.scale.y = 1.2
+        marker.scale.z = 1.2
         marker.color.a = 1.0
         marker.color.r = 1.0
         marker.color.g = .5
@@ -171,7 +173,7 @@ class HomographyConverter():
         # switch to rviz coordinate system
         self.message_x = x
         self.message_y = y
-        self.message_frame = "base_link"
+        self.message_frame = "base_link_gt"
         
         # Draw a marker for visualization
         self.draw_marker()
@@ -226,7 +228,7 @@ class HomographyConverter():
         # switch to rviz coordinate system
         self.message_x = xlook
         self.message_y = ylook
-        self.message_frame = "base_link"
+        self.message_frame = "base_link_gt"
         
         # Draw a marker for visualization
         self.draw_marker()
